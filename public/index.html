@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <!-- mobile stabil & anti-zoom -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Prediksi Bola • Bandar Toto</title>
+  <meta name="description" content="Selamat datang di pusat prediksi Bandartoto dan bola paling lengkap dan terpercaya! Kami menyajikan angka jitu, prediksi skor bola, dan analisa pasaran dari berbagai liga dan pasaran populer seperti Singapore, Hongkong, Sydney, Premier League, La Liga, dan lainnya.">
+  <!-- Favicon (tetap) -->
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjLh2t-Vg3Aa7_7QZbNR3fToBhtNN9M6yxb9rpvt7FgAER-sszshC8MZ_rUJ8OJ7c00MRBKVS58FqWxsqSFMDGLBMdsBaL0HCluxN438ul8moLVFTJrcfMfIV9mhh-3u81R_tTyGfunVvFYzvZvlEfUJu4kBozPT7s8XSFuSCmBR6Pd0DLpKXxoItPntREO" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader" class="loader">
+  <div class="loader-card">
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEhyJGNV3ArwiX2Ly4ckKPqeKaY96qBR-YjsGVxmdpTmoti5CnqoJwIwMryHnQvorcFp6PswNy8ltuHiyzGiWjr-esssonfNqA3tyw1iT6xo2jpB9onpyZ-L2iVYkGEL42lkiuY8XzeP3H2QVlIpa-fcvvCU7H5b47iO1mZ3Nigs0o7PtQI5xR6uu92coIsJ" alt="Bandar Toto" style="height:56px;border-radius:10px"/>
+    <div class="spin"></div>
+    <p>Memuat prediksi…</p>
+  </div>
+</div>
+
+<!-- Header (logo-only + search) -->
+<header class="topbar">
+  <div class="container wrap">
+    <button class="brand" id="logoBtn" aria-label="WD BANDAR">
+      <img class="logo" src="https://blogger.googleusercontent.com/img/a/AVvXsEhyJGNV3ArwiX2Ly4ckKPqeKaY96qBR-YjsGVxmdpTmoti5CnqoJwIwMryHnQvorcFp6PswNy8ltuHiyzGiWjr-esssonfNqA3tyw1iT6xo2jpB9onpyZ-L2iVYkGEL42lkiuY8XzeP3H2QVlIpa-fcvvCU7H5b47iO1mZ3Nigs0o7PtQI5xR6uu92coIsJ" alt="Bandar Toto">
+    </button>
+    <div class="searchbox">
+      <input id="q" type="search" placeholder="Cari liga atau tim..." aria-label="Cari liga atau tim" />
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/></svg>
+    </div>
+  </div>
+</header>
+
+<!-- ======== RUNNING TEXT (di atas slider) ======== -->
+<div class="ticker" role="status" aria-live="polite">
+  <div class="ticker__track">
+    <span>Selamat datang di WDBANDAR, Bandar Bola, Togel, Live Casino &amp; Slot Online Terbesar di Indonesia.</span>
+    <span aria-hidden="true">Selamat datang di WDBANDAR, Bandar Bola, Togel, Live Casino &amp; Slot Online Terbesar di Indonesia.</span>
+  </div>
+</div>
+
+<!-- ======== SLIDER ======== -->
+<section class="container">
+  <div class="slider" id="slider">
+    <div class="slide-track" id="track">
+      <div class="slide"><img src="https://cdn.bdr8k8.com/slide/bola.webp" alt="QRIS Payment"></div>
+      <div class="slide"><img src="https://cdn.bdr8k8.com/slide/qrisbt.webp" alt="Bonus Spesial"></div>
+      <div class="slide"><img src="https://cdn.bdr8k8.com/slide/mj12.webp" alt="Freebet Slot"></div>
+      <div class="slide"><img src="https://cdn.bdr8k8.com/slide/apk%20(1).webp" alt="Provider Slot Gacor"></div>
+    </div>
+    <button class="ctrl prev" id="prev" aria-label="Sebelumnya">❮</button>
+    <button class="ctrl next" id="next" aria-label="Berikutnya">❯</button>
+    <div class="dots" id="dots"></div>
+  </div>
+</section>
+
+<!-- ======== AUTH BUTTONS (di bawah slider) ======== -->
+<section class="container authbar">
+  <a class="btn-cta btn-gold" href="https://wdbandar.com/" target="_blank" rel="noopener">Daftar</a>
+  <a class="btn-cta btn-rgb"  href="https://wdbandar.com/ target="_blank" rel="noopener">Login</a>
+  <!-- Live Score → HALAMAN LAIN (tab baru) -->
+  <a class="btn-cta btn-rgb" href="/live" target="_blank" rel="noopener">Live Score</a>
+</section>
+
+<!-- ======== HERO TITLE (di bawah tombol) ======== -->
+<section class="hero">
+  <div class="container">
+    <h1>Prediksi Skor</h1>
+    <p id="dateLine" class="date"></p>
+  </div>
+</section>
+
+<!-- ======== CONTENT PREDIKSI ======== -->
+<main class="container" id="content"></main>
+
+<footer class="footer">© <span id="y"></span> Bandar Toto • Prediksi Skor</footer>
+
+<script>
+/* ===== Helpers ===== */
+const $ = s => document.querySelector(s);
+const el = h => {const d=document.createElement('div'); d.innerHTML=h.trim(); return d.firstChild;}
+const ymd = d => d.toISOString().slice(0,10);
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;}
+const fmtID = d => d.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+
+/* ===== Logo behavior: refresh + scroll to top ===== */
+document.getElementById('logoBtn').addEventListener('click', ()=>{
+  window.scrollTo({top:0, behavior:'smooth'});
+  location.reload();
+});
+
+/* ===== Slider ===== */
+(function initSlider(){
+  const track = document.getElementById('track');
+  const slider = document.getElementById('slider');
+  const slides = track.children.length;
+  let idx = 0, timer=null, startX=0, deltaX=0;
+
+  const dots = document.getElementById('dots');
+  for(let i=0;i<slides;i++){
+    const dot=document.createElement('div'); dot.className='dot'+(i===0?' active':'');
+    dot.addEventListener('click', ()=>go(i,true));
+    dots.appendChild(dot);
+  }
+  const setDots = ()=>[...dots.children].forEach((d,i)=>d.classList.toggle('active', i===idx));
+
+  const go = (n,hold=false)=>{
+    idx = (n+slides)%slides;
+    track.style.transform = `translateX(-${idx*100}%)`;
+    setDots();
+    if(hold){reset();}
+  };
+  const next = ()=>go(idx+1);
+  const prev = ()=>go(idx-1);
+
+  const reset = ()=>{
+    if(timer) clearInterval(timer);
+    timer = setInterval(next, 3500);
+  };
+
+  document.getElementById('next').onclick = ()=>go(idx+1,true);
+  document.getElementById('prev').onclick = ()=>go(idx-1,true);
+  slider.addEventListener('mouseenter', ()=>timer&&clearInterval(timer));
+  slider.addEventListener('mouseleave', reset);
+
+  // swipe
+  slider.addEventListener('touchstart', e=>{startX=e.touches[0].clientX; deltaX=0; if(timer) clearInterval(timer);});
+  slider.addEventListener('touchmove', e=>{deltaX = e.touches[0].clientX - startX;});
+  slider.addEventListener('touchend', ()=>{ if(Math.abs(deltaX)>40){ deltaX>0?prev():next(); } reset(); });
+
+  reset();
+})();
+
+/* ===== PRIORITAS URUTAN (liga & pertandingan) ===== */
+const MAJOR_LEAGUES = [
+  'UEFA CHAMPIONS LEAGUE',
+  'UEFA EUROPA LEAGUE',
+  'UEFA EUROPA CONFERENCE LEAGUE',
+  'ENGLAND - PREMIER LEAGUE',
+  'SPAIN - LA LIGA',
+  'ITALY - SERIE A',
+  'GERMANY - BUNDESLIGA',
+  'FRANCE - LIGUE 1'
+];
+const INDO_LEAGUES = ['INDONESIA - LIGA 1','INDONESIA - LIGA 2','INDONESIA'];
+const BIG_TEAMS = [
+  'Real Madrid','Barcelona','Atlético','Manchester City','Manchester United',
+  'Liverpool','Arsenal','Chelsea','Tottenham',
+  'Bayern','Dortmund','PSG','Inter','AC Milan','Juventus','Napoli',
+  'Ajax','PSV','Benfica','Porto'
+];
+const ID_TEAMS = [
+  'Persib','Persija','Persebaya','Arema','Bali United','PSM','Persik','Dewa United',
+  'Madura United','Borneo','Persita','Barito Putera'
+];
+
+function groupPriority(title='') {
+  const T = title.toUpperCase().trim();
+  const m = MAJOR_LEAGUES.findIndex(x => T.includes(x));
+  if (m !== -1) return 1 + m;
+  const i = INDO_LEAGUES.findIndex(x => T.includes(x));
+  if (i !== -1) return 100 + i;
+  return 1000;
+}
+function matchPriority(row) {
+  const m = (row.match || '').toLowerCase();
+  let score = 0;
+  BIG_TEAMS.forEach(t => { if (m.includes(t.toLowerCase())) score += 10; });
+  if (m.includes('derby')) score += 4;
+  ID_TEAMS.forEach(t => { if (m.includes(t.toLowerCase())) score += 6; });
+  return score;
+}
+
+/* ===== Prediksi skor ===== */
+function estimateScore(r){
+  if (r.predictedScore) return r.predictedScore;
+  const match = r.match || '';
+  const [home, away] = match.split(' vs ');
+  const tip = r.tip || 'Draw';
+  const c = Math.max(0, Math.min(100, Number(r.confidence ?? 50)));
+  const flip = s => { const [a,b]=s.split('-').map(x=>x.trim()); return `${b} - ${a}`; };
+  if (tip === 'Draw'){
+    if (c >= 75) return '1 - 1';
+    if (c >= 55) return '0 - 0';
+    return '1 - 1';
+  } else {
+    let s = '1 - 0';
+    if (c >= 85) s = '3 - 1';
+    else if (c >= 75) s = '2 - 0';
+    else if (c >= 65) s = '2 - 1';
+    else s = '1 - 0';
+    if (tip !== home) s = flip(s);
+    return s;
+  }
+}
+
+/* ====== FIX: tampilkan bendera di judul panel ====== */
+function panelSkor(title, rows, flag){
+  return `
+  <section class="panel" data-title="${title}">
+    <div class="head">
+      ${flag ? `<img src="${flag}" alt="" onerror="this.style.display='none'" style="height:14px;vertical-align:-2px;margin-right:8px;border-radius:2px" />` : ``}
+      ${title.toUpperCase()}
+    </div>
+    <div class="twrap">
+      <table class="t">
+        <thead>
+          <tr>
+            <th style="width:170px">Tanggal & Waktu (WIB)</th>
+            <th>PREDIKSI SKOR</th>
+            <th style="width:110px">Skor</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((r,i)=>`
+            <tr class="${i%2?'alt':''}" data-row="${(r.match||'').toLowerCase()}">
+              <td class="time">${r.kickoff || '-'}</td>
+              <td>${r.match}</td>
+              <td class="score">${estimateScore(r)}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </section>`;
+}
+
+/* === render PREDIKSI === */
+function render(data){
+  const root = $('#content');
+  root.innerHTML = '';
+
+  const groups = [...(data.groups || [])].sort((a,b) => groupPriority(a.title) - groupPriority(b.title));
+
+  groups.forEach(g => {
+    const rows = [...(g.rows || [])].sort((r1, r2) => matchPriority(r2) - matchPriority(r1));
+    root.appendChild(el(panelSkor(g.title, rows, g.flag))); /* <= kirim flag dari backend */
+  });
+
+  applyFilter($('#q').value.trim().toLowerCase());
+}
+
+/* ===== Data dari backend ===== */
+async function fetchData(dateStr){
+  const r = await fetch('/api/fixtures?date='+encodeURIComponent(dateStr));
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+// fallback demo
+function demo(dateStr){
+  return {
+    date:dateStr,
+    groups:[
+      { title:'ENGLAND - PREMIER LEAGUE', flag:'https://flagcdn.com/w20/gb.png', rows:[
+        { kickoff:'20/09 18:30 WIB', match:'Liverpool vs Everton', tip:'Liverpool', confidence:78 },
+        { kickoff:'20/09 21:00 WIB', match:'Brighton vs Tottenham', tip:'Tottenham', confidence:58 },
+        { kickoff:'20/09 23:30 WIB', match:'Man United vs Chelsea', tip:'Man United', confidence:61 }
+      ]},
+      { title:'ITALY - SERIE A', flag:'https://flagcdn.com/w20/it.png', rows:[
+        { kickoff:'20/09 23:00 WIB', match:'Hellas Verona vs Juventus', tip:'Juventus', confidence:72 },
+        { kickoff:'21/09 01:45 WIB', match:'Udinese vs AC Milan', tip:'AC Milan', confidence:59 }
+      ]}
+    ]
+  };
+}
+
+async function load(d){
+  const ds = ymd(d);
+  document.getElementById('dateLine').textContent = fmtID(d);
+  const loader=$('#loader'); loader.classList.add('show');
+  try{
+    const data = await fetchData(ds);
+    render(data);
+  }catch(e){
+    render(demo(ds));
+  }finally{
+    loader.classList.remove('show');
+  }
+}
+
+/* ===== Search filter (liga/tim) ===== */
+function applyFilter(q){
+  const panels = document.querySelectorAll('.panel');
+  panels.forEach(p=>{
+    const ttl = (p.dataset.title||'').toLowerCase();
+    let visibleAny = false;
+    p.querySelectorAll('tbody tr').forEach(tr=>{
+      const row = tr.getAttribute('data-row') || '';
+      const show = !q || row.includes(q) || ttl.includes(q);
+      tr.style.display = show ? '' : 'none';
+      if(show) visibleAny = true;
+    });
+    p.style.display = visibleAny ? '' : 'none';
+  });
+}
+document.getElementById('q').addEventListener('input', e=>{
+  applyFilter(e.target.value.trim().toLowerCase());
+});
+
+/* ===== Boot ===== */
+document.getElementById('y').textContent = new Date().getFullYear();
+load(new Date());
+</script>
+
+<!-- ========== QUICK MENU (tambah sebelum </body>) ========== -->
+<style>
+  /* scope khusus biar gak bentrok */
+  .mc-fab{position:fixed;left:14px;bottom:16px;z-index:9999;padding:10px 18px;
+    border:0;border-radius:16px;background:linear-gradient(180deg,#ffe07a,#f7b500);
+    color:#671d00;font-weight:800;box-shadow:0 10px 24px rgba(0,0,0,.35);cursor:pointer}
+  .mc-fab:active{transform:translateY(1px)}
+  .mc-sheet{position:fixed;left:14px;bottom:78px;width:320px;max-width:92vw;z-index:9998;
+    background:linear-gradient(180deg,#ffeb99,#ffd24d);border:1px solid #f0b400;
+    border-radius:18px;box-shadow:0 16px 36px rgba(0,0,0,.45);color:#1a1a1a;
+    transform:translateY(10px) scale(.98);opacity:0;pointer-events:none;transition:.22s}
+  .mc-sheet.show{transform:none;opacity:1;pointer-events:auto}
+  .mc-head{padding:14px 16px 4px;font-weight:900;font-size:18px;color:#c01414}
+  .mc-sub{padding:0 16px 8px;color:#6b6b6b;font-size:12px}
+  .mc-list{padding:8px 14px 16px}
+  .mc-item{display:flex;gap:12px;align-items:center;margin:10px 0;padding:12px;
+    background:#0e0e14;border:1px solid #2b2b38;border-radius:16px;color:#e9ebf5}
+
+  /* FIX: ikon selalu proporsional di dalam kotak */
+  .mc-icon{
+    width:44px;height:44px;border-radius:12px;background:#1d1d28;
+    display:grid;place-items:center;overflow:hidden; /* penting agar gif tak melebar */
+  }
+  .mc-icon img{
+    display:block;width:100%;height:100%;object-fit:contain; /* jaga proporsi */
+    image-rendering:auto;
+  }
+
+  .mc-ttl{font-weight:800;margin-bottom:4px}
+  .mc-desc{font-size:12px;color:#b6b9c6}
+  .mc-close{display:block;width:calc(100% - 24px);margin:10px auto 14px;padding:10px 14px;border-radius:999px;
+    border:1px solid #f0b400;background:#ffd24d;color:#7a2100;font-weight:800}
+</style>
+
+<button id="mcFab" class="mc-fab" aria-controls="mcSheet" aria-expanded="false">Menu</button>
+
+<div id="mcSheet" class="mc-sheet" aria-hidden="true">
+  <div class="mc-head">Menu Cepat</div>
+  <div class="mc-sub">Akses Menu Cepat Bandartoto</div>
+
+  <div class="mc-list">
+    <!-- Telegram -->
+    <a class="mc-item" href="https://t.me/Seputarbandartoto24jam" target="_blank" rel="noopener">
+      <div class="mc-icon">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgRaC4IuCdW6LqBl_2o7qQcRg9xr18ceHGFzc3tZAZXgKQZKbQ-7cZFPY8Pxo6ElPfEbdq605KUQNGspxOHIvohGn5gQx-DjkzUIvvERXKUV8Z772UFFiQZdn95wt6KYvlJNv3wpzKjfo1Fn9GWUXyJ69AVNwfC3FXa38S2dAkasZoWmeOsgu36mE-zgHHQ/s1600/telegram-ezgif.com-speed.gif" alt="Telegram" loading="lazy">
+      </div>
+      <div>
+        <div class="mc-ttl">Telegram</div>
+        <div class="mc-desc">Channel update 24 jam</div>
+      </div>
+    </a>
+
+    <!-- RTP SLOT -->
+    <a class="mc-item" href="https://preciseurl.org/rtp_bandartoto" target="_blank" rel="noopener">
+      <div class="mc-icon">
+        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgWLBIMZUh7mOFQpWrFURSEbGabQyjDt-PD1hmkYdY6H-P09ePZOTVgxOV3R_sRauNA0Orkmnt2ik0w-p9YCEBPaauizJOUbJ1avz5tDLoGHyE2nMZ58QH7f4tFYc-mULUh2SoB9M2TiC-Wwx9EuXyls0nNfdKe9RjuoXgD7TXbg70roTnMwFmejdmnWsyY/s1600/GIF-RTP-SLOT-ezgif.com-speed.gif" alt="RTP SLOT" loading="lazy">
+      </div>
+      <div>
+        <div class="mc-ttl">RTP SLOT</div>
+        <div class="mc-desc">Cek RTP Slot Hari Ini</div>
+      </div>
+    </a>
+
+    <!-- Bukti Jackpot (BARU) -->
+    <a class="mc-item" href="https://buktijpbandartoto.xyz/" target="_blank" rel="noopener">
+      <div class="mc-icon">
+        <img src="https://photoku.io/images/2025/08/29/buktijepe-ezgif.com-speed.gif" alt="Bukti Jackpot" loading="lazy">
+      </div>
+      <div>
+        <div class="mc-ttl">Bukti Jackpot</div>
+        <div class="mc-desc">Galeri JP Lunas Bandartoto</div>
+      </div>
+    </a>
+
+    <!-- Live Chat -->
+    <a class="mc-item" href="https://secure.livechatinc.com/customer/action/open_chat?license_id=19283376" target="_blank" rel="noopener">
+      <div class="mc-icon">
+        <img src="https://cdn.rek8k8.cloud/icongiflivechat.webp" alt="Live Chat" loading="lazy">
+      </div>
+      <div>
+        <div class="mc-ttl">Live Chat</div>
+        <div class="mc-desc">Butuh bantuan? Chat kami</div>
+      </div>
+    </a>
+
+    <button class="mc-close" type="button" id="mcClose">✕ Close Menu</button>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const fab = document.getElementById('mcFab');
+    const sheet = document.getElementById('mcSheet');
+    const closeBtn = document.getElementById('mcClose');
+
+    const open = () => { sheet.classList.add('show'); fab.setAttribute('aria-expanded','true'); sheet.setAttribute('aria-hidden','false'); }
+    const close = () => { sheet.classList.remove('show'); fab.setAttribute('aria-expanded','false'); sheet.setAttribute('aria-hidden','true'); }
+    const toggle = () => sheet.classList.contains('show') ? close() : open();
+
+    fab.addEventListener('click', toggle);
+    closeBtn.addEventListener('click', close);
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') close(); });
+
+    // optional: auto close ketika klik di luar sheet
+    document.addEventListener('click', (e)=>{
+      if(!sheet.classList.contains('show')) return;
+      const within = sheet.contains(e.target) || fab.contains(e.target);
+      if(!within) close();
+    });
+  })();
+</script>
+<!-- ========== /QUICK MENU ========== -->
+
+</body>
+</html>
