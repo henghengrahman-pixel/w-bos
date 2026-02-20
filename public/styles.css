@@ -355,3 +355,167 @@ input,select,textarea,button{font-size:16px}
   border:1px solid rgba(255,216,107,.65);
   background:#ffd24d;color:#5a1c00;font-weight:900;
 }
+
+/* =======================================================================
+   ✅ FIX LIVE SCORE MOBILE (NAMA TIM JELAS + RAPI)
+   Tempel bagian ini paling bawah (atau replace kalau sudah ada live css).
+   ======================================================================= */
+
+/* group league */
+.live-list{display:block}
+.lg{margin:12px 0}
+.lg-head{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;
+  font-weight:900;letter-spacing:.2px;
+  background:rgba(0,0,0,.62);
+  border:1px solid rgba(255,216,107,.16);
+  border-radius:12px;
+  color:#e9ebf5;
+}
+.lg-head .lname{opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-body{margin-top:8px;display:flex;flex-direction:column;gap:10px}
+
+/* match card */
+.mwrap{
+  background:rgba(0,0,0,.62);
+  border:1px solid rgba(255,216,107,.16);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 18px 50px rgba(0,0,0,.45);
+}
+
+/* DESKTOP: 1 baris */
+.match-row{
+  display:grid;
+  grid-template-columns:60px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  color:#e9ebf5;
+}
+
+/* minute */
+.m-left{display:flex;align-items:flex-start;justify-content:flex-start}
+.m-left .minute{font-weight:1000;color:#39a7ff;font-size:13px}
+.m-left .minute.dim{color:#e9ebf5;opacity:.9}
+
+/* teams + score */
+.m-mid{
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+  gap:10px;
+}
+
+.teamline{min-width:0;display:flex;align-items:center;gap:8px}
+.teamline.left{justify-content:flex-end;text-align:right}
+.teamline.right{justify-content:flex-start;text-align:left;flex-direction:row-reverse}
+.teamline span{
+  display:block;
+  min-width:0;
+  font-weight:1000;
+  font-size:13.5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.score-pill{
+  background:rgba(11,16,36,.95);
+  color:#fff;
+  font-weight:1000;
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,.10);
+  min-width:78px;
+  text-align:center;
+  white-space:nowrap;
+}
+
+/* actions */
+.m-actions{display:flex;justify-content:flex-end;gap:8px;align-items:center}
+.btn-mini{
+  border:1px solid rgba(255,216,107,.20);
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:1000;
+  cursor:pointer;
+  font-size:12px;
+  white-space:nowrap;
+}
+.btn-mini:hover{filter:brightness(1.05)}
+.chev{
+  width:34px;height:34px;border-radius:12px;
+  border:1px solid rgba(255,216,107,.16);
+  background:rgba(0,0,0,.55);
+  color:#e9ebf5;
+  display:grid;place-items:center;
+  cursor:pointer;user-select:none;
+}
+.chev span{display:inline-block;transform:rotate(0deg);transition:.18s}
+.chev.open span{transform:rotate(180deg)}
+
+/* expand */
+.expand{
+  display:none;
+  border-top:1px solid rgba(255,216,107,.10);
+  background:rgba(0,0,0,.45);
+  padding:10px 12px
+}
+.expand.show{display:block}
+
+/* ✅ MOBILE: 2 baris biar nama tim gak kepotong */
+@media (max-width:520px){
+  .match-row{
+    grid-template-columns:1fr auto;
+    grid-template-areas:
+      "time actions"
+      "mid  mid";
+    align-items:start;
+    gap:10px 10px;
+    padding:12px;
+  }
+
+  .m-left{grid-area:time}
+  .m-actions{grid-area:actions}
+  .m-mid{grid-area:mid}
+
+  /* Mid jadi 3 baris: Home / Score / Away */
+  .m-mid{
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "home"
+      "score"
+      "away";
+    gap:8px;
+    padding-top:2px;
+  }
+
+  .teamline.left{grid-area:home;justify-content:flex-start;text-align:left}
+  .teamline.right{grid-area:away;justify-content:flex-start;text-align:left;flex-direction:row}
+  .score-pill{grid-area:score;justify-self:start}
+
+  /* Nama tim full & tegas */
+  .teamline span{
+    white-space:normal;
+    overflow:visible;
+    text-overflow:clip;
+    font-size:14.5px;
+    line-height:1.22;
+  }
+
+  .score-pill{
+    min-width:92px;
+    font-size:13px;
+    padding:8px 12px;
+  }
+
+  .btn-mini{padding:8px 10px;font-size:12px}
+  .chev{width:34px;height:34px}
+}
