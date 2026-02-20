@@ -469,8 +469,6 @@ input,select,textarea,button{font-size:16px}
 }
 .expand.show{display:block}
 
-/* ✅ MOBILE: 2 baris biar nama tim gak kepotong */
-@media (max-width:520px){
   .match-row{
     grid-template-columns:1fr auto;
     grid-template-areas:
@@ -485,32 +483,34 @@ input,select,textarea,button{font-size:16px}
   .m-actions{grid-area:actions}
   .m-mid{grid-area:mid}
 
-  /* Mid jadi 3 baris: Home / Score / Away */
+  /* Mid jadi 3 kolom biar skor selalu center */
   .m-mid{
     display:grid;
-    grid-template-columns:1fr;
-    grid-template-areas:
-      "home"
-      "score"
-      "away";
-    gap:8px;
-    padding-top:2px;
+    grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+    align-items:center;
+    gap:10px;
+    padding-top:4px;
   }
 
-  .teamline.left{grid-area:home;justify-content:flex-start;text-align:left}
-  .teamline.right{grid-area:away;justify-content:flex-start;text-align:left;flex-direction:row}
-  .score-pill{grid-area:score;justify-self:start}
+  /* Home kiri, Away kanan */
+  .teamline.left{justify-content:flex-end;text-align:right}
+  .teamline.right{justify-content:flex-start;text-align:left;flex-direction:row-reverse}
 
-  /* Nama tim full & tegas */
+  /* Nama tim boleh 2 baris */
   .teamline span{
     white-space:normal;
-    overflow:visible;
-    text-overflow:clip;
-    font-size:14.5px;
-    line-height:1.22;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-size:14px;
+    line-height:1.2;
   }
 
+  /* Skor center dan stabil */
   .score-pill{
+    justify-self:center;
     min-width:92px;
     font-size:13px;
     padding:8px 12px;
