@@ -2,31 +2,172 @@
 <html lang="id">
 <head>
   <meta charset="utf-8" />
-  <!-- mobile stabil & anti-zoom -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Prediksi Bola • WD BANDAR</title>
-  <meta name="description" content="Selamat datang di pusat prediksi  WD BANDAR  dan bola paling lengkap dan terpercaya! Kami menyajikan angka jitu, prediksi skor bola, dan analisa pasaran dari berbagai liga dan pasaran populer seperti Singapore, Hongkong, Sydney, Premier League, La Liga, dan lainnya.">
-  <!-- Favicon (tetap) -->
+  <title>Live Score • WD BANDAR</title>
   <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjLh2t-Vg3Aa7_7QZbNR3fToBhtNN9M6yxb9rpvt7FgAER-sszshC8MZ_rUJ8OJ7c00MRBKVS58FqWxsqSFMDGLBMdsBaL0HCluxN438ul8moLVFTJrcfMfIV9mhh-3u81R_tTyGfunVvFYzvZvlEfUJu4kBozPT7s8XSFuSCmBR6Pd0DLpKXxoItPntREO" />
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    .grid{display:grid;gap:12px}
+    @media(min-width:860px){ .grid.cols-2{grid-template-columns:1fr 1fr} .grid.cols-3{grid-template-columns:1fr 1fr 1fr} }
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#1b1b22;border:1px solid #2b2b38;font-size:12px}
+    .muted{color:#b5b8c6}.mini{font-size:12px}.badge{font-weight:800}
+    .evt{display:flex;gap:8px;align-items:center}.evt .t{width:34px;text-align:right;font-weight:800}
+    .divider{height:1px;background:#2b2b38;margin:8px 0}
+    .flag{width:18px;height:12px;object-fit:cover;border:1px solid #2b2b38;border-radius:2px;margin-right:8px;vertical-align:-2px}
+
+    /* ====== LIVE LIST (SportMonks-style) ====== */
+    .live-list{display:block}
+    .lg{margin:12px 0}
+    .lg-head{display:flex;align-items:center;gap:8px;padding:10px 12px;font-weight:900;letter-spacing:.2px;background:#0f1220;border:1px solid #2b2b38;border-radius:12px;color:#e9ebf5}
+    .lg-head .lname{opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .lg-body{margin-top:8px;display:flex;flex-direction:column;gap:10px}
+
+    /* container match */
+    .mwrap{background:#0e0e14;border:1px solid #2b2b38;border-radius:12px;overflow:hidden}
+    .match-row{
+      display:grid;
+      grid-template-columns:74px 1fr 88px 34px;
+      gap:10px;
+      align-items:center;
+      padding:12px;
+      color:#e9ebf5;
+    }
+    @media (max-width:620px){
+      .match-row{grid-template-columns:60px 1fr 78px 34px}
+    }
+
+    /* left time */
+    .m-left{display:flex;align-items:flex-start;justify-content:flex-start}
+    .m-left .minute{font-weight:900;color:#39a7ff;font-size:13px}
+    .m-left .minute.dim{color:#e9ebf5;opacity:.9}
+    .m-left .stage{display:none}
+
+    /* middle teams + score pill */
+    .m-mid{min-width:0;display:flex;align-items:center;justify-content:center;gap:14px}
+    .teamline{display:flex;align-items:center;gap:10px;min-width:0}
+    .teamline.right{flex-direction:row-reverse}
+    .teamline span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;font-weight:800}
+    @media(max-width:620px){.teamline span{max-width:150px}}
+    .score-pill{
+      background:#0b1024;
+      color:#fff;
+      font-weight:900;
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:13px;
+      border:1px solid rgba(255,255,255,.06);
+      min-width:70px;
+      text-align:center;
+    }
+
+    /* right actions */
+    .m-right{display:flex;justify-content:flex-end;gap:8px;align-items:center}
+    .btn-mini{
+      border:1px solid #394155;
+      background:#151a28;
+      color:#e9ebf5;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:800;
+      cursor:pointer;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .chev{
+      width:30px;height:30px;border-radius:10px;
+      border:1px solid #2b2b38;background:#0f1220;color:#e9ebf5;
+      display:grid;place-items:center;cursor:pointer;user-select:none;
+    }
+    .chev span{display:inline-block;transform:rotate(0deg);transition:.18s}
+    .chev.open span{transform:rotate(180deg)}
+
+    /* expanded events area */
+    .expand{display:none;border-top:1px solid #262633;background:#0f0f14;padding:10px 12px}
+    .expand.show{display:block}
+    .evwrap{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media(max-width:720px){.evwrap{grid-template-columns:1fr}}
+    .col{border:1px solid #2b2b38;border-radius:12px;padding:10px;background:#0e0e14}
+    .colttl{font-weight:900;font-size:12px;color:#e9ebf5;opacity:.95;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .ev{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px dashed #2b2b38}
+    .ev:last-child{border-bottom:0}
+    .evL{display:flex;align-items:center;gap:8px;min-width:0}
+    .min{font-weight:900;color:#10b981;font-size:12px;min-width:38px;text-align:right}
+    .ico{width:18px;display:inline-grid;place-items:center}
+    .txt{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px}
+    @media(max-width:720px){.txt{max-width:100%}}
+    .empty{padding:6px 0;color:#b5b8c6;font-weight:800;font-size:12px}
+
+    /* ====== NEXT / AKAN DIMULAI (jam mewah) ====== */
+    .next-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .next-tabs{display:flex;gap:8px}
+    .tab-btn{
+      background:#0f1220;border:1px solid #2b2b38;color:#e9ebf5;
+      padding:8px 12px;border-radius:999px;font-weight:800;letter-spacing:.2px;cursor:pointer
+    }
+    .tab-btn.on{background:linear-gradient(180deg,#ffe08e,#ffd86b 55%,#e1b64c);color:#1b1300;border-color:#caa44a}
+    .up-group{margin:12px 0}
+    .up-head{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#0f1220;border:1px solid #2b2b38;border-radius:12px;font-weight:900}
+    .up-body{margin-top:8px;display:flex;flex-direction:column;gap:10px}
+    .up-card{
+      display:grid;grid-template-columns:92px 1fr auto;gap:12px;align-items:center;
+      padding:12px;background:#0e0e14;border:1px solid #2b2b38;border-radius:12px
+    }
+    @media (max-width:620px){.up-card{grid-template-columns:84px 1fr auto}}
+    .kick{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .clock{
+      position:relative;width:68px;height:68px;border-radius:999px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:radial-gradient(120px 120px at 50% 20%, #1a1f2c, #0b0e14);
+      color:#f6f7fb;border:1px solid #2f3647;box-shadow:inset 0 8px 30px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.35)
+    }
+    .clock::after{
+      content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;
+      background:linear-gradient(135deg,#ffd86b,#e1b64c,#ffd86b);
+      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor;mask-composite:exclude;
+      filter:drop-shadow(0 0 6px rgba(255,216,107,.25));
+    }
+    .t-big{font-weight:900;font-size:15px;letter-spacing:.4px}
+    .t-sub{font-size:11px;color:#d6d9e5;opacity:.9;margin-top:2px}
+    .eta{font-size:12px;font-weight:800;letter-spacing:.2px;color:#ffd86b;text-shadow:0 0 8px rgba(255,216,107,.15)}
+    .up-mid .team{gap:10px}
+    .up-right .pill{border-color:#394155;background:#151a28}
+
+    /* ===== MODAL ===== */
+    .modal{position:fixed;inset:0;display:none;place-items:center;z-index:60}
+    .modal.show{display:grid}
+    .modal .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px)}
+    .modal .card{
+      position:relative;width:min(920px,94vw);max-height:86vh;overflow:auto;
+      background:#0f0f14;border:1px solid #2b2b38;border-radius:16px;
+      box-shadow:0 30px 100px rgba(0,0,0,.6)
+    }
+    .modal .mhead{
+      position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 14px;border-bottom:1px solid #262633;background:linear-gradient(180deg,#1b1b24,#14141c)
+    }
+    .modal .mhead .ttl{font-weight:900;letter-spacing:.3px}
+    .modal .mclose{
+      background:#191922;border:1px solid #2b2b38;color:#e8e9f0;border-radius:10px;padding:6px 10px;cursor:pointer
+    }
+    .modal .mbody{padding:12px}
+  </style>
 </head>
 <body>
 
-<!-- Loader -->
 <div id="loader" class="loader">
   <div class="loader-card">
     <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiiVttNmaKU0LM4GRHru67o1H-JSJJVKqQLtnzi_53KWYVYe6Odlqjxg1wmKHKC1hzoKQ9ns6rTdQ1Vv8SEehRtaSPREhjoLHeQD6MZKCRcvND7PVYzy7KFvLAaBAHLBNCtZgw84oLho-ZAJnW5p8x90-IR08fQVWFz9PIQu73D6WTCbLU-G5USsBzdUk7F" alt="WD BANDAR" style="height:56px;border-radius:10px"/>
     <div class="spin"></div>
-    <p>Memuat prediksi…</p>
+    <p>Memuat live score…</p>
   </div>
 </div>
 
-<!-- Header (logo-only + search) -->
 <header class="topbar">
   <div class="container wrap">
-    <button class="brand" id="logoBtn" aria-label="WD BANDAR">
-      <img class="logo" src="https://blogger.googleusercontent.com/img/a/AVvXsEiiVttNmaKU0LM4GRHru67o1H-JSJJVKqQLtnzi_53KWYVYe6Odlqjxg1wmKHKC1hzoKQ9ns6rTdQ1Vv8SEehRtaSPREhjoLHeQD6MZKCRcvND7PVYzy7KFvLAaBAHLBNCtZgw84oLho-ZAJnW5p8x90-IR08fQVWFz9PIQu73D6WTCbLU-G5USsBzdUk7F" alt="Bandar Toto">
-    </button>
+    <a class="brand" href="/" aria-label="WD Bandar">
+      <img class="logo" src="https://blogger.googleusercontent.com/img/a/AVvXsEiiVttNmaKU0LM4GRHru67o1H-JSJJVKqQLtnzi_53KWYVYe6Odlqjxg1wmKHKC1hzoKQ9ns6rTdQ1Vv8SEehRtaSPREhjoLHeQD6MZKCRcvND7PVYzy7KFvLAaBAHLBNCtZgw84oLho-ZAJnW5p8x90-IR08fQVWFz9PIQu73D6WTCbLU-G5USsBzdUk7F" alt="WD BANDAR ">
+    </a>
     <div class="searchbox">
       <input id="q" type="search" placeholder="Cari liga atau tim..." aria-label="Cari liga atau tim" />
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79L20 21.5 21.5 20l-6-6Zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14Z"/></svg>
@@ -34,15 +175,13 @@
   </div>
 </header>
 
-<!-- ======== RUNNING TEXT (di atas slider) ======== -->
 <div class="ticker" role="status" aria-live="polite">
   <div class="ticker__track">
-    <span>Selamat datang di WDBANDAR, Bandar Bola, Togel, Live Casino &amp; Slot Online Terbesar di Indonesia.</span>
-    <span aria-hidden="true">Selamat datang di WDBANDAR, Bandar Bola, Togel, Live Casino &amp; Slot Online Terbesar di Indonesia.</span>
+    <span>Selamat datang di BANDARTOTO, Bandar Bola, Togel, Live Casino &amp; Slot Online Terbesar di Indonesia.</span>
+    <span aria-hidden="true">Selamat datang di BANDARTOTO, Bandar Bola, Togel, Live Casino &amp; Slot Online Terbesar di Indonesia.</span>
   </div>
 </div>
 
-<!-- ======== SLIDER ======== -->
 <section class="container">
   <div class="slider" id="slider">
     <div class="slide-track" id="track">
@@ -57,48 +196,97 @@
   </div>
 </section>
 
-<!-- ======== AUTH BUTTONS (di bawah slider) ======== -->
 <section class="container authbar">
   <a class="btn-cta btn-gold" href="https://wdbandar.com/" target="_blank" rel="noopener">Daftar</a>
-  <a class="btn-cta btn-rgb"  href="https://wdbandar.com/ target="_blank" rel="noopener">Login</a>
-  <!-- Live Score → HALAMAN LAIN (tab baru) -->
-  <a class="btn-cta btn-rgb" href="/live" target="_blank" rel="noopener">Live Score</a>
+  <a class="btn-cta btn-rgb" href="https://wdbandar.com/" target="_blank" rel="noopener">Login</a>
+  <a class="btn-cta btn-rgb" href="/" target="_blank" rel="noopener">Prediksi Skor</a>
 </section>
 
-<!-- ======== HERO TITLE (di bawah tombol) ======== -->
 <section class="hero">
   <div class="container">
-    <h1>Prediksi Skor</h1>
-    <p id="dateLine" class="date"></p>
+    <h1>Live Score</h1>
+    <p class="date" id="dateLine"></p>
   </div>
 </section>
 
-<!-- ======== CONTENT PREDIKSI ======== -->
-<main class="container" id="content"></main>
+<section class="container">
+  <div class="panel live">
+    <div class="head">LIVE SCORE</div>
+    <div class="twrap">
+      <div id="liveList" class="live-list">
+        <div class="muted" style="padding:12px">Memuat data…</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<footer class="footer">© <span id="y"></span> Bandar Toto • Prediksi Skor</footer>
+<section class="container">
+  <div class="panel">
+    <div class="head">AKAN DIMULAI (NEXT)</div>
+    <div class="twrap" style="padding:10px">
+      <div class="next-head">
+        <div class="muted mini">Pertandingan akan mulai dalam beberapa jam ke depan.</div>
+        <div class="next-tabs">
+          <button class="tab-btn on" data-h="2">2j</button>
+          <button class="tab-btn" data-h="6">6j</button>
+          <button class="tab-btn" data-h="12">12j</button>
+          <button class="tab-btn" data-h="24">24j</button>
+        </div>
+      </div>
+      <div id="upcomingList" style="margin-top:10px">
+        <div class="muted" style="padding:8px 4px">Memuat jadwal…</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container">
+  <div class="panel">
+    <div class="head">HASIL AKHIR (FT)</div>
+    <div class="twrap">
+      <table class="t">
+        <thead>
+          <tr>
+            <th style="width:220px">Liga</th>
+            <th>Pertandingan</th>
+            <th style="width:90px">Skor</th>
+            <th style="width:80px">Status</th>
+          </tr>
+        </thead>
+        <tbody id="ftBody"><tr><td colspan="4" class="muted">Memuat data…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="container" id="detailBox" style="display:none"></section>
+
+<div id="modal" class="modal" aria-hidden="true">
+  <div class="backdrop"></div>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="mhead">
+      <div id="modalTitle" class="ttl">MATCH DATA</div>
+      <button class="mclose" id="modalClose" aria-label="Tutup">✕</button>
+    </div>
+    <div id="modalBody" class="mbody"></div>
+  </div>
+</div>
+
+<footer class="footer">© <span id="y"></span> WD BANDAR • Live Score</footer>
 
 <script>
-/* ===== Helpers ===== */
+/* Utils */
 const $ = s => document.querySelector(s);
-const el = h => {const d=document.createElement('div'); d.innerHTML=h.trim(); return d.firstChild;}
-const ymd = d => d.toISOString().slice(0,10);
-const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;}
-const fmtID = d => d.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+document.getElementById('y').textContent = new Date().getFullYear();
+document.getElementById('dateLine').textContent =
+  new Date().toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
 
-/* ===== Logo behavior: refresh + scroll to top ===== */
-document.getElementById('logoBtn').addEventListener('click', ()=>{
-  window.scrollTo({top:0, behavior:'smooth'});
-  location.reload();
-});
-
-/* ===== Slider ===== */
+/* Slider */
 (function initSlider(){
   const track = document.getElementById('track');
   const slider = document.getElementById('slider');
   const slides = track.children.length;
   let idx = 0, timer=null, startX=0, deltaX=0;
-
   const dots = document.getElementById('dots');
   for(let i=0;i<slides;i++){
     const dot=document.createElement('div'); dot.className='dot'+(i===0?' active':'');
@@ -106,316 +294,362 @@ document.getElementById('logoBtn').addEventListener('click', ()=>{
     dots.appendChild(dot);
   }
   const setDots = ()=>[...dots.children].forEach((d,i)=>d.classList.toggle('active', i===idx));
-
-  const go = (n,hold=false)=>{
-    idx = (n+slides)%slides;
-    track.style.transform = `translateX(-${idx*100}%)`;
-    setDots();
-    if(hold){reset();}
-  };
-  const next = ()=>go(idx+1);
-  const prev = ()=>go(idx-1);
-
-  const reset = ()=>{
-    if(timer) clearInterval(timer);
-    timer = setInterval(next, 3500);
-  };
-
+  const go = (n,hold=false)=>{ idx=(n+slides)%slides; track.style.transform=`translateX(-${idx*100}%)`; setDots(); if(hold) reset(); };
+  const next=()=>go(idx+1), prev=()=>go(idx-1);
+  const reset=()=>{ if(timer) clearInterval(timer); timer=setInterval(next, 3500); };
   document.getElementById('next').onclick = ()=>go(idx+1,true);
   document.getElementById('prev').onclick = ()=>go(idx-1,true);
   slider.addEventListener('mouseenter', ()=>timer&&clearInterval(timer));
   slider.addEventListener('mouseleave', reset);
-
-  // swipe
   slider.addEventListener('touchstart', e=>{startX=e.touches[0].clientX; deltaX=0; if(timer) clearInterval(timer);});
   slider.addEventListener('touchmove', e=>{deltaX = e.touches[0].clientX - startX;});
   slider.addEventListener('touchend', ()=>{ if(Math.abs(deltaX)>40){ deltaX>0?prev():next(); } reset(); });
-
   reset();
 })();
 
-/* ===== PRIORITAS URUTAN (liga & pertandingan) ===== */
-const MAJOR_LEAGUES = [
-  'UEFA CHAMPIONS LEAGUE',
-  'UEFA EUROPA LEAGUE',
-  'UEFA EUROPA CONFERENCE LEAGUE',
-  'ENGLAND - PREMIER LEAGUE',
-  'SPAIN - LA LIGA',
-  'ITALY - SERIE A',
-  'GERMANY - BUNDESLIGA',
-  'FRANCE - LIGUE 1'
-];
-const INDO_LEAGUES = ['INDONESIA - LIGA 1','INDONESIA - LIGA 2','INDONESIA'];
-const BIG_TEAMS = [
-  'Real Madrid','Barcelona','Atlético','Manchester City','Manchester United',
-  'Liverpool','Arsenal','Chelsea','Tottenham',
-  'Bayern','Dortmund','PSG','Inter','AC Milan','Juventus','Napoli',
-  'Ajax','PSV','Benfica','Porto'
-];
-const ID_TEAMS = [
-  'Persib','Persija','Persebaya','Arema','Bali United','PSM','Persik','Dewa United',
-  'Madura United','Borneo','Persita','Barito Putera'
-];
+/* ===== FILTER pencarian (live + upcoming + FT) ===== */
+function applyFilter(){
+  const q = ($('#q').value||'').trim().toLowerCase();
 
-function groupPriority(title='') {
-  const T = title.toUpperCase().trim();
-  const m = MAJOR_LEAGUES.findIndex(x => T.includes(x));
-  if (m !== -1) return 1 + m;
-  const i = INDO_LEAGUES.findIndex(x => T.includes(x));
-  if (i !== -1) return 100 + i;
-  return 1000;
-}
-function matchPriority(row) {
-  const m = (row.match || '').toLowerCase();
-  let score = 0;
-  BIG_TEAMS.forEach(t => { if (m.includes(t.toLowerCase())) score += 10; });
-  if (m.includes('derby')) score += 4;
-  ID_TEAMS.forEach(t => { if (m.includes(t.toLowerCase())) score += 6; });
-  return score;
-}
-
-/* ===== Prediksi skor ===== */
-function estimateScore(r){
-  if (r.predictedScore) return r.predictedScore;
-  const match = r.match || '';
-  const [home, away] = match.split(' vs ');
-  const tip = r.tip || 'Draw';
-  const c = Math.max(0, Math.min(100, Number(r.confidence ?? 50)));
-  const flip = s => { const [a,b]=s.split('-').map(x=>x.trim()); return `${b} - ${a}`; };
-  if (tip === 'Draw'){
-    if (c >= 75) return '1 - 1';
-    if (c >= 55) return '0 - 0';
-    return '1 - 1';
-  } else {
-    let s = '1 - 0';
-    if (c >= 85) s = '3 - 1';
-    else if (c >= 75) s = '2 - 0';
-    else if (c >= 65) s = '2 - 1';
-    else s = '1 - 0';
-    if (tip !== home) s = flip(s);
-    return s;
-  }
-}
-
-/* ====== FIX: tampilkan bendera di judul panel ====== */
-function panelSkor(title, rows, flag){
-  return `
-  <section class="panel" data-title="${title}">
-    <div class="head">
-      ${flag ? `<img src="${flag}" alt="" onerror="this.style.display='none'" style="height:14px;vertical-align:-2px;margin-right:8px;border-radius:2px" />` : ``}
-      ${title.toUpperCase()}
-    </div>
-    <div class="twrap">
-      <table class="t">
-        <thead>
-          <tr>
-            <th style="width:170px">Tanggal & Waktu (WIB)</th>
-            <th>PREDIKSI SKOR</th>
-            <th style="width:110px">Skor</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map((r,i)=>`
-            <tr class="${i%2?'alt':''}" data-row="${(r.match||'').toLowerCase()}">
-              <td class="time">${r.kickoff || '-'}</td>
-              <td>${r.match}</td>
-              <td class="score">${estimateScore(r)}</td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-  </section>`;
-}
-
-/* === render PREDIKSI === */
-function render(data){
-  const root = $('#content');
-  root.innerHTML = '';
-
-  const groups = [...(data.groups || [])].sort((a,b) => groupPriority(a.title) - groupPriority(b.title));
-
-  groups.forEach(g => {
-    const rows = [...(g.rows || [])].sort((r1, r2) => matchPriority(r2) - matchPriority(r1));
-    root.appendChild(el(panelSkor(g.title, rows, g.flag))); /* <= kirim flag dari backend */
+  // live (match wrapper)
+  document.querySelectorAll('.mwrap').forEach(w=>{
+    const row = (w.getAttribute('data-row')||'').toLowerCase();
+    w.style.display = !q || row.includes(q) ? '' : 'none';
+  });
+  document.querySelectorAll('.lg').forEach(g=>{
+    const any = !!g.querySelector('.mwrap:not([style*="display: none"])');
+    g.style.display = any ? '' : 'none';
   });
 
-  applyFilter($('#q').value.trim().toLowerCase());
+  // upcoming
+  document.querySelectorAll('.up-card').forEach(card=>{
+    const row = (card.getAttribute('data-row')||'').toLowerCase();
+    card.style.display = !q || row.includes(q) ? '' : 'none';
+  });
+  document.querySelectorAll('.up-group').forEach(g=>{
+    const any = !!g.querySelector('.up-card:not([style*="display: none"])');
+    g.style.display = any ? '' : 'none';
+  });
+
+  // FT
+  document.querySelectorAll('#ftBody tr[data-row]').forEach(tr=>{
+    const row = tr.getAttribute('data-row') || '';
+    tr.style.display = !q || row.includes(q) ? '' : 'none';
+  });
+}
+$('#q').addEventListener('input', applyFilter);
+
+/* Helper kecil */
+function leagueCell(r){const f=r.flag?`<img class="flag" src="${r.flag}" alt="" loading="lazy">`:'';return `${f}${r.league}`;}
+function parseTeams(match=''){const [home='', away='']=match.split(' vs ');return {home, away};}
+function timeLabel(t=''){
+  const s=(t||'').trim().toUpperCase();
+  if(!s) return 'LIVE';
+  if(s.includes('HT')) return 'HT';
+  if(s.includes('FT')) return 'FT';
+  if(/^\d+/.test(s)) return s;
+  return s;
+}
+function evIcon(type='', detail=''){
+  const x=(type+' '+detail).toLowerCase();
+  if(x.includes('goal')) return '⚽';
+  if(x.includes('yellowred')||x.includes('yellow/red')) return '🟥';
+  if(x.includes('red')) return '🟥';
+  if(x.includes('yellow')) return '🟨';
+  if(x.includes('var')) return '📺';
+  if(x.includes('penalty')) return '🧤';
+  if(x.includes('sub')) return '🔁';
+  return '•';
 }
 
-/* ===== Data dari backend ===== */
-async function fetchData(dateStr){
-  const r = await fetch('/api/fixtures?date='+encodeURIComponent(dateStr));
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  return r.json();
-}
-// fallback demo
-function demo(dateStr){
-  return {
-    date:dateStr,
-    groups:[
-      { title:'ENGLAND - PREMIER LEAGUE', flag:'https://flagcdn.com/w20/gb.png', rows:[
-        { kickoff:'20/09 18:30 WIB', match:'Liverpool vs Everton', tip:'Liverpool', confidence:78 },
-        { kickoff:'20/09 21:00 WIB', match:'Brighton vs Tottenham', tip:'Tottenham', confidence:58 },
-        { kickoff:'20/09 23:30 WIB', match:'Man United vs Chelsea', tip:'Man United', confidence:61 }
-      ]},
-      { title:'ITALY - SERIE A', flag:'https://flagcdn.com/w20/it.png', rows:[
-        { kickoff:'20/09 23:00 WIB', match:'Hellas Verona vs Juventus', tip:'Juventus', confidence:72 },
-        { kickoff:'21/09 01:45 WIB', match:'Udinese vs AC Milan', tip:'AC Milan', confidence:59 }
-      ]}
-    ]
+/* ===== LIVE ===== */
+async function fetchLive(){const r=await fetch('/api/live',{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+async function fetchMatch(id){const r=await fetch('/api/match/'+id,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+
+function renderEventsHTML(det){
+  const sb = det?.scoreboard || {};
+  const homeName = (sb.home||'').toLowerCase();
+  const awayName = (sb.away||'').toLowerCase();
+  const ev = (det?.events || []).slice().sort((a,b)=>(a.time||0)-(b.time||0));
+
+  const left=[], right=[];
+  for(const e of ev){
+    const tn = (e.team||'').toLowerCase();
+    const side = tn.includes(homeName) ? 'home' : tn.includes(awayName) ? 'away' : 'home';
+    (side==='home'?left:right).push(e);
+  }
+
+  const list = (arr)=>{
+    if(!arr.length) return `<div class="empty">No events yet</div>`;
+    return arr.map(e=>{
+      const m = (e.time ?? 0);
+      const ico = evIcon(e.type, e.detail);
+      const txt = (e.player ? e.player+' ' : '') + (e.detail || e.type || '');
+      return `<div class="ev"><div class="evL"><div class="min">${m}'</div><div class="ico">${ico}</div><div class="txt" title="${txt}">${txt}</div></div></div>`;
+    }).join('');
   };
+
+  return `
+    <div class="evwrap">
+      <div class="col">
+        <div class="colttl"><span>${sb.home || 'Home'}</span><span class="muted mini">${sb.time || ''}</span></div>
+        ${list(left)}
+      </div>
+      <div class="col">
+        <div class="colttl"><span>${sb.away || 'Away'}</span><span class="muted mini">${sb.time || ''}</span></div>
+        ${list(right)}
+      </div>
+    </div>
+  `;
 }
 
-async function load(d){
-  const ds = ymd(d);
-  document.getElementById('dateLine').textContent = fmtID(d);
+async function loadLive(){
   const loader=$('#loader'); loader.classList.add('show');
   try{
-    const data = await fetchData(ds);
-    render(data);
-  }catch(e){
-    render(demo(ds));
+    const data = await fetchLive();
+    const rows = data.rows || [];
+    const groups = {};
+    rows.forEach(r=>{
+      const key=`${r.league}__${r.flag||''}`;
+      (groups[key] ||= {title:r.league, flag:r.flag, items:[]}).items.push(r);
+    });
+
+    const html = Object.values(groups).map(g=>{
+      const head=`<div class="lg-head">${g.flag?`<img class="flag" src="${g.flag}" alt="">`:``}<span class="lname">${g.title}</span></div>`;
+      const body=g.items.map(r=>{
+        const {home,away}=parseTeams(r.match||'');
+        const t = timeLabel(r.time||'');
+        const dim = (t==='HT' || t==='FT') ? 'dim' : '';
+        const rid = r.id;
+
+        return `
+          <div class="mwrap" data-row="${(r.league+' '+r.match).toLowerCase()}" id="mw_${rid}">
+            <div class="match-row">
+              <div class="m-left"><div class="minute ${dim}">${t}</div></div>
+              <div class="m-mid">
+                <div class="teamline left"><span title="${home}">${home}</span></div>
+                <div class="score-pill">${r.score || '0 - 0'}</div>
+                <div class="teamline right"><span title="${away}">${away}</span></div>
+              </div>
+              <div class="m-right">
+                <button class="btn-mini" onclick="openMatch(${rid})">Lihat Data</button>
+              </div>
+              <div class="chev" role="button" aria-label="toggle events" data-id="${rid}"><span>⌄</span></div>
+            </div>
+            <div class="expand" id="ex_${rid}">
+              <div class="muted mini">Loading events…</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `<div class="lg">${head}<div class="lg-body">${body || `<div class="muted mini" style="padding:8px 12px">Belum ada pertandingan.</div>`}</div></div>`;
+    }).join('');
+
+    $('#liveList').innerHTML = html || `<div class="muted" style="padding:12px">Belum ada pertandingan live.</div>`;
+    applyFilter();
+
+    // bind expand buttons
+    document.querySelectorAll('.chev[data-id]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const id = btn.getAttribute('data-id');
+        const ex = document.getElementById('ex_'+id);
+        const opened = ex.classList.toggle('show');
+        btn.classList.toggle('open', opened);
+
+        if(opened && ex.getAttribute('data-loaded')!=='1'){
+          try{
+            const det = await fetchMatch(id);
+            ex.innerHTML = renderEventsHTML(det);
+            ex.setAttribute('data-loaded','1');
+          }catch{
+            ex.innerHTML = `<div class="muted mini">Gagal load events.</div>`;
+          }
+        }
+      });
+    });
+
+  }catch{
+    $('#liveList').innerHTML = `<div class="muted" style="padding:12px">Gagal memuat live score.</div>`;
   }finally{
     loader.classList.remove('show');
   }
 }
+loadLive();
+setInterval(loadLive, 60000);
 
-/* ===== Search filter (liga/tim) ===== */
-function applyFilter(q){
-  const panels = document.querySelectorAll('.panel');
-  panels.forEach(p=>{
-    const ttl = (p.dataset.title||'').toLowerCase();
-    let visibleAny = false;
-    p.querySelectorAll('tbody tr').forEach(tr=>{
-      const row = tr.getAttribute('data-row') || '';
-      const show = !q || row.includes(q) || ttl.includes(q);
-      tr.style.display = show ? '' : 'none';
-      if(show) visibleAny = true;
-    });
-    p.style.display = visibleAny ? '' : 'none';
+/* ===== UPCOMING (NEXT) ===== */
+async function fetchUpcoming(h){const r=await fetch('/api/upcoming?hours='+h,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+function splitKickoff(str=''){const m=(str||'').match(/(\d{2}\/\d{2}).*?(\d{2}[:.]\d{2})/);return {d:m?.[1]||'-',t:(m?.[2]||'-').replace('.',':')};}
+function fmtEta(mins){mins=Math.max(0,Math.round(mins));const h=Math.floor(mins/60);const m=mins%60;return h?`${h}j ${m}m`:`${m}m`;}
+function renderUpcoming(data){
+  const rows = data.rows || [];
+  const groups={};
+  rows.forEach(r=>{const key=`${r.league}__${r.flag||''}`;(groups[key] ||= {title:r.league, flag:r.flag, items:[]}).items.push(r);});
+  const html = Object.values(groups).map(g=>{
+    const head = `<div class="up-head">${g.flag?`<img class="flag" src="${g.flag}" alt="">`:``}<span>${g.title}</span></div>`;
+    const body = g.items.map(r=>{
+      const {home,away}=parseTeams(r.match||'');
+      const {d,t}=splitKickoff(r.kickoff||'');
+      const now = Date.now();
+      return `
+        <div class="up-card" data-row="${(r.league+' '+r.match).toLowerCase()}" data-created="${now}" data-eta="${r.in}">
+          <div class="kick">
+            <div class="clock"><div class="t-big">${t}</div><div class="t-sub">${d}</div></div>
+            <div class="eta">in ${fmtEta(r.in)}</div>
+          </div>
+          <div class="up-mid">
+            <div class="team"><span>${home}</span></div>
+            <div class="team"><span>${away}</span></div>
+          </div>
+          <div class="up-right"><button class="pill" onclick="openMatch(${r.id})">Detail</button></div>
+        </div>`;
+    }).join('');
+    return `<div class="up-group">${head}<div class="up-body">${body||`<div class="muted mini" style="padding:8px 12px">Tidak ada jadwal dalam rentang ini.</div>`}</div></div>`;
+  }).join('');
+  $('#upcomingList').innerHTML = html || `<div class="muted" style="padding:8px 12px">Tidak ada jadwal dalam rentang ini.</div>`;
+  applyFilter();
+}
+async function loadUpcoming(hours=2){
+  try{ const d = await fetchUpcoming(hours); renderUpcoming(d); }
+  catch{ $('#upcomingList').innerHTML=`<div class="muted" style="padding:8px 12px">Gagal memuat jadwal.</div>`; }
+}
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    loadUpcoming(btn.dataset.h || 2);
+  });
+});
+function tickEta(){
+  const now = Date.now();
+  document.querySelectorAll('.up-card').forEach(card=>{
+    const created = Number(card.getAttribute('data-created')||now);
+    const base = Number(card.getAttribute('data-eta')||0);
+    const gone = Math.round((now - created)/60000);
+    const left = Math.max(0, base - gone);
+    const el = card.querySelector('.eta');
+    if (el) el.textContent = 'in ' + fmtEta(left);
   });
 }
-document.getElementById('q').addEventListener('input', e=>{
-  applyFilter(e.target.value.trim().toLowerCase());
-});
+loadUpcoming(2);
+setInterval(()=>{ loadUpcoming(document.querySelector('.tab-btn.on')?.dataset.h||2); }, 120000);
+setInterval(tickEta, 30000);
 
-/* ===== Boot ===== */
-document.getElementById('y').textContent = new Date().getFullYear();
-load(new Date());
-</script>
-
-<!-- ========== QUICK MENU (tambah sebelum </body>) ========== -->
-<style>
-  /* scope khusus biar gak bentrok */
-  .mc-fab{position:fixed;left:14px;bottom:16px;z-index:9999;padding:10px 18px;
-    border:0;border-radius:16px;background:linear-gradient(180deg,#ffe07a,#f7b500);
-    color:#671d00;font-weight:800;box-shadow:0 10px 24px rgba(0,0,0,.35);cursor:pointer}
-  .mc-fab:active{transform:translateY(1px)}
-  .mc-sheet{position:fixed;left:14px;bottom:78px;width:320px;max-width:92vw;z-index:9998;
-    background:linear-gradient(180deg,#ffeb99,#ffd24d);border:1px solid #f0b400;
-    border-radius:18px;box-shadow:0 16px 36px rgba(0,0,0,.45);color:#1a1a1a;
-    transform:translateY(10px) scale(.98);opacity:0;pointer-events:none;transition:.22s}
-  .mc-sheet.show{transform:none;opacity:1;pointer-events:auto}
-  .mc-head{padding:14px 16px 4px;font-weight:900;font-size:18px;color:#c01414}
-  .mc-sub{padding:0 16px 8px;color:#6b6b6b;font-size:12px}
-  .mc-list{padding:8px 14px 16px}
-  .mc-item{display:flex;gap:12px;align-items:center;margin:10px 0;padding:12px;
-    background:#0e0e14;border:1px solid #2b2b38;border-radius:16px;color:#e9ebf5}
-
-  /* FIX: ikon selalu proporsional di dalam kotak */
-  .mc-icon{
-    width:44px;height:44px;border-radius:12px;background:#1d1d28;
-    display:grid;place-items:center;overflow:hidden; /* penting agar gif tak melebar */
+/* ===== FT ===== */
+async function fetchFinished(){const r=await fetch('/api/finished',{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+async function loadFinished(){
+  try{
+    const data = await fetchFinished();
+    const rows = (data.rows||[]).map(r => `
+      <tr data-row="${(r.league+' '+r.match).toLowerCase()}">
+        <td>${leagueCell(r)}</td>
+        <td>${r.match}</td>
+        <td class="score">${r.score}</td>
+        <td>${r.status || 'FT'}</td>
+      </tr>`).join('');
+    $('#ftBody').innerHTML = rows || `<tr><td colspan="4" class="muted">Belum ada yang selesai hari ini.</td></tr>`;
+    applyFilter();
+  }catch{
+    $('#ftBody').innerHTML = `<tr><td colspan="4" class="muted">Gagal memuat hasil akhir.</td></tr>`;
   }
-  .mc-icon img{
-    display:block;width:100%;height:100%;object-fit:contain; /* jaga proporsi */
-    image-rendering:auto;
+}
+loadFinished();
+
+/* ===== MODAL controls ===== */
+const modal = $('#modal');
+const modalBody = $('#modalBody');
+const modalClose = $('#modalClose');
+function showModal(html){
+  modalBody.innerHTML = html;
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  setTimeout(()=>modalClose?.focus(), 50);
+}
+function hideModal(){
+  modal.classList.remove('show');
+  modalBody.innerHTML = '';
+  document.body.style.overflow = '';
+}
+modalClose.addEventListener('click', hideModal);
+modal.addEventListener('click', (e)=>{ if (e.target.classList.contains('backdrop')) hideModal(); });
+document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') hideModal(); });
+
+/* ===== DETAIL MATCH → tampil di modal ===== */
+function statTable(title, home, away){
+  const keys = new Set([...(home||[]), ...(away||[])].map(s=>s.type));
+  const get = (arr, k) => (arr.find(x=>x.type===k)?.value ?? '-');
+  return `
+  <div class="panel">
+    <div class="head">${title}</div>
+    <div class="twrap">
+      <table class="t">
+        <thead><tr><th style="width:36%">Home</th><th>Stat</th><th style="width:36%">Away</th></tr></thead>
+        <tbody>
+          ${[...keys].map(k=>`<tr><td>${get(home,k)}</td><td>${k}</td><td>${get(away,k)}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function minuteTable(title, dist){
+  return `
+  <div class="panel">
+    <div class="head">${title.toUpperCase()}</div>
+    <div class="twrap">
+      <table class="t">
+        <thead><tr><th>Time</th><th>Scored</th><th>Conceded</th></tr></thead>
+        <tbody>
+          ${(dist||[]).map(r=>`<tr><td>${r.bucket}</td><td>${r.for}</td><td>${r.against}</td></tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+function eventsBlock(list){
+  if (!list || !list.length) return `<div class="muted mini">Belum ada event.</div>`;
+  return `
+    <div class="grid">
+      ${list.sort((a,b)=>a.time-b.time).map(e=>`
+        <div class="evt">
+          <div class="t">${e.time}'</div>
+          <div><span class="badge">${e.team}</span> — ${e.type}${e.detail?(' · '+e.detail):''}${e.player?(' · '+e.player):''}</div>
+        </div>`).join('')}
+    </div>`;
+}
+async function openMatch(id){
+  showModal(`<div class="panel"><div class="head">MATCH DATA</div><div class="twrap"><div style="padding:12px" class="muted">Memuat detail…</div></div></div>`);
+  try{
+    const d = await fetchMatch(id);
+    const sb = d.scoreboard || {};
+    const header = `
+      <div class="panel live">
+        <div class="head">SCOREBOARD</div>
+        <div class="twrap">
+          <div style="padding:14px" class="grid cols-3">
+            <div style="text-align:right;font-weight:800">${sb.home||'-'}</div>
+            <div style="text-align:center;font-size:28px;font-weight:900">${sb.score||'-'}</div>
+            <div style="font-weight:800">${sb.away||'-'}</div>
+            <div class="muted" style="grid-column:1 / -1; text-align:center">Status: <span class="pill">${sb.time||'-'}</span></div>
+          </div>
+          <div class="divider"></div>
+          <div style="padding:12px">
+            <div class="mini muted" style="margin-bottom:6px">Events</div>
+            ${eventsBlock(d.events)}
+          </div>
+        </div>
+      </div>`;
+    const stats = statTable('STATISTIK PERTANDINGAN', d.stats?.home||[], d.stats?.away||[]);
+    const mins = `
+      <div class="grid cols-2">
+        ${minuteTable('HOME — Scored/Conceded (15 min)', d.distribution?.home||[])}
+        ${minuteTable('AWAY — Scored/Conceded (15 min)', d.distribution?.away||[])}
+      </div>`;
+    modalBody.innerHTML = header + stats + mins;
+  }catch{
+    modalBody.innerHTML = `<div class="panel"><div class="head">MATCH DATA</div><div class="twrap"><div style="padding:12px" class="muted">Gagal memuat data.</div></div></div>`;
   }
-
-  .mc-ttl{font-weight:800;margin-bottom:4px}
-  .mc-desc{font-size:12px;color:#b6b9c6}
-  .mc-close{display:block;width:calc(100% - 24px);margin:10px auto 14px;padding:10px 14px;border-radius:999px;
-    border:1px solid #f0b400;background:#ffd24d;color:#7a2100;font-weight:800}
-</style>
-
-<button id="mcFab" class="mc-fab" aria-controls="mcSheet" aria-expanded="false">Menu</button>
-
-<div id="mcSheet" class="mc-sheet" aria-hidden="true">
-  <div class="mc-head">Menu Cepat</div>
-  <div class="mc-sub">Akses Menu Cepat Bandartoto</div>
-
-  <div class="mc-list">
-    <!-- Telegram -->
-    <a class="mc-item" href="https://t.me/Seputarbandartoto24jam" target="_blank" rel="noopener">
-      <div class="mc-icon">
-        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgRaC4IuCdW6LqBl_2o7qQcRg9xr18ceHGFzc3tZAZXgKQZKbQ-7cZFPY8Pxo6ElPfEbdq605KUQNGspxOHIvohGn5gQx-DjkzUIvvERXKUV8Z772UFFiQZdn95wt6KYvlJNv3wpzKjfo1Fn9GWUXyJ69AVNwfC3FXa38S2dAkasZoWmeOsgu36mE-zgHHQ/s1600/telegram-ezgif.com-speed.gif" alt="Telegram" loading="lazy">
-      </div>
-      <div>
-        <div class="mc-ttl">Telegram</div>
-        <div class="mc-desc">Channel update 24 jam</div>
-      </div>
-    </a>
-
-    <!-- RTP SLOT -->
-    <a class="mc-item" href="https://preciseurl.org/rtp_bandartoto" target="_blank" rel="noopener">
-      <div class="mc-icon">
-        <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgWLBIMZUh7mOFQpWrFURSEbGabQyjDt-PD1hmkYdY6H-P09ePZOTVgxOV3R_sRauNA0Orkmnt2ik0w-p9YCEBPaauizJOUbJ1avz5tDLoGHyE2nMZ58QH7f4tFYc-mULUh2SoB9M2TiC-Wwx9EuXyls0nNfdKe9RjuoXgD7TXbg70roTnMwFmejdmnWsyY/s1600/GIF-RTP-SLOT-ezgif.com-speed.gif" alt="RTP SLOT" loading="lazy">
-      </div>
-      <div>
-        <div class="mc-ttl">RTP SLOT</div>
-        <div class="mc-desc">Cek RTP Slot Hari Ini</div>
-      </div>
-    </a>
-
-    <!-- Bukti Jackpot (BARU) -->
-    <a class="mc-item" href="https://buktijpbandartoto.xyz/" target="_blank" rel="noopener">
-      <div class="mc-icon">
-        <img src="https://photoku.io/images/2025/08/29/buktijepe-ezgif.com-speed.gif" alt="Bukti Jackpot" loading="lazy">
-      </div>
-      <div>
-        <div class="mc-ttl">Bukti Jackpot</div>
-        <div class="mc-desc">Galeri JP Lunas Bandartoto</div>
-      </div>
-    </a>
-
-    <!-- Live Chat -->
-    <a class="mc-item" href="https://secure.livechatinc.com/customer/action/open_chat?license_id=19283376" target="_blank" rel="noopener">
-      <div class="mc-icon">
-        <img src="https://cdn.rek8k8.cloud/icongiflivechat.webp" alt="Live Chat" loading="lazy">
-      </div>
-      <div>
-        <div class="mc-ttl">Live Chat</div>
-        <div class="mc-desc">Butuh bantuan? Chat kami</div>
-      </div>
-    </a>
-
-    <button class="mc-close" type="button" id="mcClose">✕ Close Menu</button>
-  </div>
-</div>
-
-<script>
-  (function(){
-    const fab = document.getElementById('mcFab');
-    const sheet = document.getElementById('mcSheet');
-    const closeBtn = document.getElementById('mcClose');
-
-    const open = () => { sheet.classList.add('show'); fab.setAttribute('aria-expanded','true'); sheet.setAttribute('aria-hidden','false'); }
-    const close = () => { sheet.classList.remove('show'); fab.setAttribute('aria-expanded','false'); sheet.setAttribute('aria-hidden','true'); }
-    const toggle = () => sheet.classList.contains('show') ? close() : open();
-
-    fab.addEventListener('click', toggle);
-    closeBtn.addEventListener('click', close);
-    document.addEventListener('keydown', e => { if(e.key === 'Escape') close(); });
-
-    // optional: auto close ketika klik di luar sheet
-    document.addEventListener('click', (e)=>{
-      if(!sheet.classList.contains('show')) return;
-      const within = sheet.contains(e.target) || fab.contains(e.target);
-      if(!within) close();
-    });
-  })();
+}
 </script>
-<!-- ========== /QUICK MENU ========== -->
-
 </body>
 </html>
