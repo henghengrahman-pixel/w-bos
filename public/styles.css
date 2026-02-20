@@ -24,16 +24,20 @@ html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
 body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color:var(--text);
+
+  /* HAPUS overlay gelap (yang bikin hitam2 ngikut) */
   background:
-    linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75)),
-    url("https://cdn.ope8k8.com/bandartotowebp/projectbarubandartoto/bgwebbandartotoketiga.webp") center/cover fixed,
+    url("https://cdn.ope8k8.com/bandartotowebp/projectbarubandartoto/bgwebbandartotoketiga.webp") center/cover no-repeat,
     linear-gradient(180deg,var(--bg),var(--bg2));
+
+  /* kalau background fixed bikin efek aneh saat scroll, jangan pakai fixed */
+  background-attachment: scroll;
+
   min-height:100vh;
   touch-action:manipulation;
   overscroll-behavior:none;
   -webkit-tap-highlight-color:transparent;
 
-  /* penting: biar konten gak ketutup topbar+ticker fixed */
   padding-top: calc(var(--topbar-h) + var(--ticker-h) + var(--gap));
 }
 input,select,textarea,button{font-size:16px}
