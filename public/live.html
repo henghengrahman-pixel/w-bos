@@ -24,16 +24,21 @@
 
     /* container match */
     .mwrap{background:#0e0e14;border:1px solid #2b2b38;border-radius:12px;overflow:hidden}
+
+    /* === FIX MOBILE LAYOUT (3 columns only) === */
     .match-row{
       display:grid;
-      grid-template-columns:74px 1fr 88px 34px;
+      grid-template-columns:56px minmax(0,1fr) auto;
       gap:10px;
       align-items:center;
       padding:12px;
       color:#e9ebf5;
     }
     @media (max-width:620px){
-      .match-row{grid-template-columns:60px 1fr 78px 34px}
+      .match-row{grid-template-columns:50px minmax(0,1fr) auto; gap:8px; padding:10px;}
+    }
+    @media (max-width:420px){
+      .match-row{grid-template-columns:46px minmax(0,1fr) auto; gap:8px; padding:10px;}
     }
 
     /* left time */
@@ -42,12 +47,49 @@
     .m-left .minute.dim{color:#e9ebf5;opacity:.9}
     .m-left .stage{display:none}
 
-    /* middle teams + score pill */
-    .m-mid{min-width:0;display:flex;align-items:center;justify-content:center;gap:14px}
-    .teamline{display:flex;align-items:center;gap:10px;min-width:0}
+    /* === teams area: grid home | score | away (more space for names) === */
+    .m-mid{
+      min-width:0;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+      align-items:center;
+      gap:10px;
+    }
+    @media(max-width:620px){ .m-mid{gap:8px;} }
+
+    .teamline{
+      min-width:0;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .teamline.left{justify-content:flex-end;text-align:right}
+    .teamline.right{justify-content:flex-start;text-align:left}
     .teamline.right{flex-direction:row-reverse}
-    .teamline span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;font-weight:800}
-    @media(max-width:620px){.teamline span{max-width:150px}}
+    .teamline span{
+      display:block;
+      min-width:0;
+      font-weight:800;
+
+      /* default desktop: single line */
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* On small phones: allow 2 lines so team names still visible */
+    @media(max-width:430px){
+      .teamline span{
+        white-space:normal;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        line-height:1.15;
+      }
+    }
+
     .score-pill{
       background:#0b1024;
       color:#fff;
@@ -58,10 +100,14 @@
       border:1px solid rgba(255,255,255,.06);
       min-width:70px;
       text-align:center;
+      white-space:nowrap;
+    }
+    @media(max-width:430px){
+      .score-pill{min-width:62px;padding:6px 10px;font-size:12px;}
     }
 
-    /* right actions */
-    .m-right{display:flex;justify-content:flex-end;gap:8px;align-items:center}
+    /* right actions (button + chevron together) */
+    .m-actions{display:flex;justify-content:flex-end;gap:8px;align-items:center}
     .btn-mini{
       border:1px solid #394155;
       background:#151a28;
@@ -72,11 +118,20 @@
       cursor:pointer;
       font-size:12px;
       white-space:nowrap;
+      line-height:1;
     }
+    .btn-mini .short{display:none}
+    @media(max-width:430px){
+      .btn-mini{padding:6px 9px;font-size:11px;}
+      .btn-mini .full{display:none}
+      .btn-mini .short{display:inline}
+    }
+
     .chev{
       width:30px;height:30px;border-radius:10px;
       border:1px solid #2b2b38;background:#0f1220;color:#e9ebf5;
       display:grid;place-items:center;cursor:pointer;user-select:none;
+      flex:0 0 auto;
     }
     .chev span{display:inline-block;transform:rotate(0deg);transition:.18s}
     .chev.open span{transform:rotate(180deg)}
@@ -113,6 +168,30 @@
       padding:12px;background:#0e0e14;border:1px solid #2b2b38;border-radius:12px
     }
     @media (max-width:620px){.up-card{grid-template-columns:84px 1fr auto}}
+
+    /* small fix upcoming: allow 2 lines on phone too */
+    .up-mid{min-width:0}
+    .up-mid .team{display:flex;gap:10px;min-width:0}
+    .up-mid .team span{
+      display:block;
+      min-width:0;
+      font-weight:800;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    @media(max-width:430px){
+      .up-mid .team span{
+        white-space:normal;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        line-height:1.15;
+      }
+    }
+
     .kick{display:flex;flex-direction:column;align-items:center;gap:6px}
     .clock{
       position:relative;width:68px;height:68px;border-radius:999px;
@@ -130,7 +209,6 @@
     .t-big{font-weight:900;font-size:15px;letter-spacing:.4px}
     .t-sub{font-size:11px;color:#d6d9e5;opacity:.9;margin-top:2px}
     .eta{font-size:12px;font-weight:800;letter-spacing:.2px;color:#ffd86b;text-shadow:0 0 8px rgba(255,216,107,.15)}
-    .up-mid .team{gap:10px}
     .up-right .pill{border-color:#394155;background:#151a28}
 
     /* ===== MODAL ===== */
@@ -422,20 +500,26 @@ async function loadLive(){
         const dim = (t==='HT' || t==='FT') ? 'dim' : '';
         const rid = r.id;
 
+        /* === UPDATED TEMPLATE: actions + chevron in one column (m-actions) === */
         return `
           <div class="mwrap" data-row="${(r.league+' '+r.match).toLowerCase()}" id="mw_${rid}">
             <div class="match-row">
               <div class="m-left"><div class="minute ${dim}">${t}</div></div>
+
               <div class="m-mid">
                 <div class="teamline left"><span title="${home}">${home}</span></div>
                 <div class="score-pill">${r.score || '0 - 0'}</div>
                 <div class="teamline right"><span title="${away}">${away}</span></div>
               </div>
-              <div class="m-right">
-                <button class="btn-mini" onclick="openMatch(${rid})">Lihat Data</button>
+
+              <div class="m-actions">
+                <button class="btn-mini" onclick="openMatch(${rid})">
+                  <span class="full">Lihat Data</span><span class="short">Data</span>
+                </button>
+                <div class="chev" role="button" aria-label="toggle events" data-id="${rid}"><span>⌄</span></div>
               </div>
-              <div class="chev" role="button" aria-label="toggle events" data-id="${rid}"><span>⌄</span></div>
             </div>
+
             <div class="expand" id="ex_${rid}">
               <div class="muted mini">Loading events…</div>
             </div>
@@ -499,8 +583,8 @@ function renderUpcoming(data){
             <div class="eta">in ${fmtEta(r.in)}</div>
           </div>
           <div class="up-mid">
-            <div class="team"><span>${home}</span></div>
-            <div class="team"><span>${away}</span></div>
+            <div class="team"><span title="${home}">${home}</span></div>
+            <div class="team"><span title="${away}">${away}</span></div>
           </div>
           <div class="up-right"><button class="pill" onclick="openMatch(${r.id})">Detail</button></div>
         </div>`;
