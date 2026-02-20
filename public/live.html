@@ -3,41 +3,49 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Live Score • Bandar Toto</title>
-  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgOFmCVgvif-PJWKOrwAnbV5CURPdCLT3vSFXkEiETLvoTCtQuz78gyuFlNPhRN72qrekc-feopiUgaOOt_dTlNJo217UsEsoR7KTFUu_As-1PY7G0n_eBFplC3EfquInsEd085chTAJrNi4BUN7Gr-m5PMGKUXp20fGUw3NCfgN82FXIU1RIsCvOnT_CRW/s320/logoapk.webp" />
+  <title>Live Score • WD BANDAR</title>
+  <link rel="icon" type="image/png" href="https://blogger.googleusercontent.com/img/a/AVvXsEjLh2t-Vg3Aa7_7QZbNR3fToBhtNN9M6yxb9rpvt7FgAER-sszshC8MZ_rUJ8OJ7c00MRBKVS58FqWxsqSFMDGLBMdsBaL0HCluxN438ul8moLVFTJrcfMfIV9mhh-3u81R_tTyGfunVvFYzvZvlEfUJu4kBozPT7s8XSFuSCmBR6Pd0DLpKXxoItPntREO" />
   <link rel="stylesheet" href="styles.css" />
   <style>
     .grid{display:grid;gap:12px}
     @media(min-width:860px){ .grid.cols-2{grid-template-columns:1fr 1fr} .grid.cols-3{grid-template-columns:1fr 1fr 1fr} }
     .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#1b1b22;border:1px solid #2b2b38;font-size:12px}
     .muted{color:#b5b8c6}.mini{font-size:12px}.badge{font-weight:800}
-    .evt{display:flex;gap:8px;align-items:center}.evt .t{width:34px;text-align:right;font-weight:800}
+    .evt{display:flex;gap:8px;align-items:center}
+    .evt .t{width:44px;text-align:right;font-weight:900;color:#dfe2ee}
     .divider{height:1px;background:#2b2b38;margin:8px 0}
     .flag{width:18px;height:12px;object-fit:cover;border:1px solid #2b2b38;border-radius:2px;margin-right:8px;vertical-align:-2px}
-
-    /* ====== LIVE LIST (tetap seperti sebelumnya) ====== */
+    .teamlogo{width:22px;height:22px;object-fit:contain}
+    .chev{width:34px;height:34px;border-radius:12px;border:1px solid #2b2b38;background:#0f1220;color:#e9ebf5;cursor:pointer;display:grid;place-items:center}
+    .chev:active{transform:scale(.98)}
+    .scorepill{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:64px;padding:6px 12px;border-radius:999px;background:#101320;border:1px solid #2b2b38;font-weight:900}
+    .scorepill strong{font-size:14px}
+    .scorepill .dash{opacity:.65;font-weight:700}
+    .stageTag{display:inline-flex;align-items:center;justify-content:center;min-width:44px;padding:6px 10px;border-radius:10px;border:1px solid #2b2b38;background:#0f1220;font-weight:900;font-size:12px;letter-spacing:.2px}
+    .stage-live{background:#2a1a1a;border-color:#4a2a2a;color:#ff8e8e}
+    .stage-ht{background:#1a2130;border-color:#2a3950;color:#8ec9ff}
+    .stage-ft{background:#1a2a1a;border-color:#2a4a2a;color:#9dff9d}
+    .leagueRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid #2b2b38;border-radius:12px;background:#0f1220;margin:12px 0 8px}
+    .leagueLeft{display:flex;align-items:center;gap:8px;font-weight:900}
+    .leagueRight{color:#b5b8c6;font-size:12px}
+    .matchRow{border:1px solid #2b2b38;border-radius:12px;background:#0e0e14;overflow:hidden}
+    .matchTop{display:grid;grid-template-columns:64px 1fr 92px 44px;gap:10px;align-items:center;padding:10px 12px}
+    @media(max-width:620px){.matchTop{grid-template-columns:54px 1fr 84px 40px}}
+    .teams{display:flex;flex-direction:column;gap:8px;min-width:0}
+    .tline{display:flex;align-items:center;gap:10px;min-width:0}
+    .tname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:800}
+    .eventsWrap{display:none;padding:10px 12px;border-top:1px solid #262633;background:#0b0e14}
+    .matchRow.open .eventsWrap{display:block}
+    .evtIcon{width:16px;height:16px;display:inline-grid;place-items:center;border-radius:6px;border:1px solid #2b2b38;background:#121527;font-size:11px}
+    .evtGoal{background:#18211a;border-color:#2a4a2a}
+    .evtCardY{background:#211f17;border-color:#4a3d1a}
+    .evtCardR{background:#2a1717;border-color:#4a2a2a}
+    .evtSub{background:#1a1f2c;border-color:#2f3647}
+    .evtSmall{color:#b5b8c6;font-size:12px;margin-left:6px}
+    .noevt{padding:8px 0;color:#b5b8c6;font-size:12px}
     .live-list{display:block}
     .lg{margin:12px 0}
-    .lg-head{display:flex;align-items:center;gap:8px;padding:10px 12px;font-weight:900;letter-spacing:.2px;background:#0f1220;border:1px solid #2b2b38;border-radius:12px;color:#e9ebf5}
-    .lg-head .lname{opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .lg-body{margin-top:8px;display:flex;flex-direction:column;gap:10px}
-    .match-card{display:grid;grid-template-columns:68px 1fr auto;gap:10px;align-items:center;padding:10px 12px;background:#0e0e14;border:1px solid #2b2b38;border-radius:12px;color:#e9ebf5}
-    .m-left{display:flex;flex-direction:column;align-items:center;gap:6px}
-    .m-left .stage{font-size:12px;border:1px solid #2b2b38;padding:2px 8px;border-radius:999px;background:#141420}
-    .m-left .minute{font-weight:900}
-    .m-mid{min-width:0}
-    .team{display:flex;justify-content:space-between;gap:10px}
-    .team span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .team + .team{margin-top:6px}
-    .m-right{font-weight:900;font-size:18px;min-width:68px;text-align:right}
-    .m-cta{grid-column:1/-1;margin-top:6px;display:flex;gap:8px}
-    .m-cta .pill{border-color:#394155;background:#151a28}
-    .is-live .stage{background:#2a1a1a;border-color:#4a2a2a;color:#ff8e8e}
-    .is-ht .stage{background:#1a2130;border-color:#2a3950;color:#8ec9ff}
-    .is-ft .stage{background:#1a2a1a;border-color:#2a4a2a;color:#9dff9d}
-    @media (max-width:620px){.match-card{grid-template-columns:56px 1fr auto}.m-right{font-size:16px;min-width:54px}}
-
-    /* ====== NEXT / AKAN DIMULAI (baru, jam mewah) ====== */
+    .lg-body{display:flex;flex-direction:column;gap:10px}
     .next-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .next-tabs{display:flex;gap:8px}
     .tab-btn{
@@ -53,7 +61,6 @@
       padding:12px;background:#0e0e14;border:1px solid #2b2b38;border-radius:12px
     }
     @media (max-width:620px){.up-card{grid-template-columns:84px 1fr auto}}
-    /* jam bulat mewah */
     .kick{display:flex;flex-direction:column;align-items:center;gap:6px}
     .clock{
       position:relative;width:68px;height:68px;border-radius:999px;
@@ -73,8 +80,6 @@
     .eta{font-size:12px;font-weight:800;letter-spacing:.2px;color:#ffd86b;text-shadow:0 0 8px rgba(255,216,107,.15)}
     .up-mid .team{gap:10px}
     .up-right .pill{border-color:#394155;background:#151a28}
-
-    /* ===== MODAL (popup untuk Lihat Data) ===== */
     .modal{position:fixed;inset:0;display:none;place-items:center;z-index:60}
     .modal.show{display:grid}
     .modal .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px)}
@@ -95,21 +100,17 @@
   </style>
 </head>
 <body>
-
-<!-- Loader -->
 <div id="loader" class="loader">
   <div class="loader-card">
-    <img src="https://i.ibb.co.com/1Y9ddgCc/27aug2025.png" alt="Bandar Toto" style="height:56px;border-radius:10px"/>
+    <img src="https://blogger.googleusercontent.com/img/a/AVvXsEiiVttNmaKU0LM4GRHru67o1H-JSJJVKqQLtnzi_53KWYVYe6Odlqjxg1wmKHKC1hzoKQ9ns6rTdQ1Vv8SEehRtaSPREhjoLHeQD6MZKCRcvND7PVYzy7KFvLAaBAHLBNCtZgw84oLho-ZAJnW5p8x90-IR08fQVWFz9PIQu73D6WTCbLU-G5USsBzdUk7F" alt="WD BANDAR" style="height:56px;border-radius:10px"/>
     <div class="spin"></div>
     <p>Memuat live score…</p>
   </div>
 </div>
-
-<!-- Topbar -->
 <header class="topbar">
   <div class="container wrap">
-    <a class="brand" href="/" aria-label="Bandar Toto">
-      <img class="logo" src="https://i.ibb.co.com/1Y9ddgCc/27aug2025.png" alt="Bandar Toto">
+    <a class="brand" href="/" aria-label="WD Bandar">
+      <img class="logo" src="https://blogger.googleusercontent.com/img/a/AVvXsEiiVttNmaKU0LM4GRHru67o1H-JSJJVKqQLtnzi_53KWYVYe6Odlqjxg1wmKHKC1hzoKQ9ns6rTdQ1Vv8SEehRtaSPREhjoLHeQD6MZKCRcvND7PVYzy7KFvLAaBAHLBNCtZgw84oLho-ZAJnW5p8x90-IR08fQVWFz9PIQu73D6WTCbLU-G5USsBzdUk7F" alt="WD BANDAR ">
     </a>
     <div class="searchbox">
       <input id="q" type="search" placeholder="Cari liga atau tim..." aria-label="Cari liga atau tim" />
@@ -117,46 +118,36 @@
     </div>
   </div>
 </header>
-
-<!-- Running text -->
 <div class="ticker" role="status" aria-live="polite">
   <div class="ticker__track">
     <span>Selamat datang di BANDARTOTO, Bandar Bola, Togel, Live Casino &amp; Slot Online Terbesar di Indonesia.</span>
     <span aria-hidden="true">Selamat datang di BANDARTOTO, Bandar Bola, Togel, Live Casino &amp; Slot Online Terbesar di Indonesia.</span>
   </div>
 </div>
-
-<!-- Slider -->
 <section class="container">
   <div class="slider" id="slider">
     <div class="slide-track" id="track">
-      <div class="slide"><img src="https://bandartoto.b-cdn.net/QRISPAYMENT1.webp" alt="QRIS Payment"></div>
-      <div class="slide"><img src="https://bandartoto.b-cdn.net/bonusspesial.webp" alt="Bonus Spesial"></div>
-      <div class="slide"><img src="https://bandartoto.b-cdn.net/freebetslot.webp" alt="Freebet Slot"></div>
-      <div class="slide"><img src="https://bandartoto.b-cdn.net/providerslotgacor.webp" alt="Provider Slot Gacor"></div>
+      <div class="slide"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEgXOGIyJ_36km33CDtET39ZCEAereT69b07CZDOEbolidrVmQzn9SSTNwkD3HKohqdHogNRObkxv3avNgXCUNkC2Zzk1aAbbTCyamumFHJaqEWD5MKnXlGUxFs7EOmOYZYwj08ovxE-bdeaH9syslR5XIQRBLQedMbQiejUpu4vhRmxgYZbgyB9N2qbq72b=s16000" alt="Promo super cuan"></div>
+      <div class="slide"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEg4Qyjae6tn9Yui2Ho3YSgJimpaVGArOru9qFfLbGpM9isWjjUvg80SK4srMEyO96lFlEKL0aO6Uu4KUbXOkKvhE4YZxrQdRYEOiswQ99CR-Ddg8YvBp_jpTH7HyYmfU6Tb-5wUt7ensdk3HNpYtykiawDb0r7NI9Mnk3uAu_AAXlFYNVUxXUPW0UjGRyN-=s16000" alt="Uji keberuntungan"></div>
+      <div class="slide"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEhOX91GWhHLz3_6eItRkxb8DTeXMFhF_NwHpnVyviXp_AaTjdr6qeNy_oZQBcFWgN9xqYoIoSDSJBtpp9VhCEh9L_78mNwmxrRftxtt-D6BRTaf-jhCMXcIsKCK6IjtLc29vn3ANlsDXH8Sus23vrcB5K9eRRTC5YqXnKKQPAdzBjuUhzA4wRjRPnGCpOLK=s16000" alt="Bonus harian"></div>
+      <div class="slide"><img src="https://blogger.googleusercontent.com/img/a/AVvXsEio1-yCsRaaDMb_YrdGQON1uv6s3bJf1y5uABMhRqYCn1dPZtsJBFVo-3_Tffiolt-l7GY0mckRpuUU9uNx5faTW6cRyLon5kaFBFpY-pp2x51BJ52-htvv6rQcQQVog8RRprz5wXwesgnAZuNgl-yXpcix7NrenQs_GzTF39LtHCpIrZDDRUZyKT1xQQWh" alt="Harian"></div>
     </div>
     <button class="ctrl prev" id="prev" aria-label="Sebelumnya">❮</button>
     <button class="ctrl next" id="next" aria-label="Berikutnya">❯</button>
     <div class="dots" id="dots"></div>
   </div>
 </section>
-
-<!-- Tombol -->
 <section class="container authbar">
-  <a class="btn-cta btn-gold" href="https://preciseurl.org/BANDARTOTO" target="_blank" rel="noopener">Daftar</a>
-  <a class="btn-cta btn-rgb"  href="https://preciseurl.org/BANDARTOTO" target="_blank" rel="noopener">Login</a>
+  <a class="btn-cta btn-gold" href="https://wdbandar.com/" target="_blank" rel="noopener">Daftar</a>
+  <a class="btn-cta btn-rgb" href="https://wdbandar.com/" target="_blank" rel="noopener">Login</a>
   <a class="btn-cta btn-rgb" href="/" target="_blank" rel="noopener">Prediksi Skor</a>
 </section>
-
-<!-- Judul -->
 <section class="hero">
   <div class="container">
     <h1>Live Score</h1>
     <p class="date" id="dateLine"></p>
   </div>
 </section>
-
-<!-- ======= LIVE SCORE (pakai API kamu) ======= -->
 <section class="container">
   <div class="panel live">
     <div class="head">LIVE SCORE</div>
@@ -167,8 +158,6 @@
     </div>
   </div>
 </section>
-
-<!-- ======= AKAN DIMULAI (NEXT) — baru ======= -->
 <section class="container">
   <div class="panel">
     <div class="head">AKAN DIMULAI (NEXT)</div>
@@ -188,8 +177,6 @@
     </div>
   </div>
 </section>
-
-<!-- Hasil Akhir (FT) -->
 <section class="container">
   <div class="panel">
     <div class="head">HASIL AKHIR (FT)</div>
@@ -208,11 +195,7 @@
     </div>
   </div>
 </section>
-
-<!-- Detail Match -->
 <section class="container" id="detailBox" style="display:none"></section>
-
-<!-- ===== MODAL untuk Lihat Data ===== -->
 <div id="modal" class="modal" aria-hidden="true">
   <div class="backdrop"></div>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -223,18 +206,12 @@
     <div id="modalBody" class="mbody"></div>
   </div>
 </div>
-
-<footer class="footer">© <span id="y"></span> Bandar Toto • Live Score</footer>
-
+<footer class="footer">© <span id="y"></span> WD BANDAR • Live Score</footer>
 <script>
-/* Utils */
 const $ = s => document.querySelector(s);
-const el = h => {const d=document.createElement('div'); d.innerHTML=h.trim(); return d.firstChild;}
 document.getElementById('y').textContent = new Date().getFullYear();
 document.getElementById('dateLine').textContent =
   new Date().toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-
-/* Slider */
 (function initSlider(){
   const track = document.getElementById('track');
   const slider = document.getElementById('slider');
@@ -259,22 +236,16 @@ document.getElementById('dateLine').textContent =
   slider.addEventListener('touchend', ()=>{ if(Math.abs(deltaX)>40){ deltaX>0?prev():next(); } reset(); });
   reset();
 })();
-
-/* ===== FILTER pencarian (live + upcoming + FT) ===== */
 function applyFilter(){
   const q = ($('#q').value||'').trim().toLowerCase();
-
-  // live
-  document.querySelectorAll('.match-card').forEach(card=>{
+  document.querySelectorAll('.matchRow').forEach(card=>{
     const row = (card.getAttribute('data-row')||'').toLowerCase();
     card.style.display = !q || row.includes(q) ? '' : 'none';
   });
   document.querySelectorAll('.lg').forEach(g=>{
-    const any = !!g.querySelector('.match-card:not([style*="display: none"])');
+    const any = !!g.querySelector('.matchRow:not([style*="display: none"])');
     g.style.display = any ? '' : 'none';
   });
-
-  // upcoming
   document.querySelectorAll('.up-card').forEach(card=>{
     const row = (card.getAttribute('data-row')||'').toLowerCase();
     card.style.display = !q || row.includes(q) ? '' : 'none';
@@ -283,71 +254,125 @@ function applyFilter(){
     const any = !!g.querySelector('.up-card:not([style*="display: none"])');
     g.style.display = any ? '' : 'none';
   });
-
-  // FT
   document.querySelectorAll('#ftBody tr[data-row]').forEach(tr=>{
     const row = tr.getAttribute('data-row') || '';
     tr.style.display = !q || row.includes(q) ? '' : 'none';
   });
 }
 $('#q').addEventListener('input', applyFilter);
-
-/* Helper kecil */
-function leagueCell(r){const f=r.flag?`<img class="flag" src="${r.flag}" alt="" loading="lazy">`:'';return `${f}${r.league}`;}
 function parseTeams(match=''){const [home='', away='']=match.split(' vs ');return {home, away};}
-function stageClass(t=''){const s=t.toLowerCase();if(s.includes('ft'))return'is-ft';if(s.includes('ht'))return'is-ht';if(/\d/.test(s))return'is-live';return'';}
+function stageClassTag(t=''){
+  const s=(t||'').toUpperCase();
+  if (s.includes('FT')) return 'stage-ft';
+  if (s.includes('HT')) return 'stage-ht';
+  if (/\d/.test(s)) return 'stage-live';
+  return '';
+}
+function leagueCell(r){const f=r.flag?`<img class="flag" src="${r.flag}" alt="" loading="lazy">`:'';return `${f}${r.league}`;}
 function splitKickoff(str=''){const m=(str||'').match(/(\d{2}\/\d{2}).*?(\d{2}[:.]\d{2})/);return {d:m?.[1]||'-',t:(m?.[2]||'-').replace('.',':')};}
 function fmtEta(mins){mins=Math.max(0,Math.round(mins));const h=Math.floor(mins/60);const m=mins%60;return h?`${h}j ${m}m`:`${m}m`;}
-
-/* ===== LIVE ===== */
+function esc(s){return String(s||'').replace(/[&<>"']/g,m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));}
+function evtIcon(type=''){
+  const t=(type||'').toLowerCase();
+  if (t.includes('goal')) return `<span class="evtIcon evtGoal">⚽</span>`;
+  if (t.includes('yellow')) return `<span class="evtIcon evtCardY">🟨</span>`;
+  if (t.includes('red')) return `<span class="evtIcon evtCardR">🟥</span>`;
+  if (t.includes('sub')) return `<span class="evtIcon evtSub">🔁</span>`;
+  return `<span class="evtIcon">•</span>`;
+}
+function eventsInline(list){
+  if (!list || !list.length) return `<div class="noevt">No events yet</div>`;
+  return `<div class="grid">${list.sort((a,b)=>(a.time||0)-(b.time||0)).map(e=>`
+    <div class="evt">
+      <div class="t">${esc(e.time)}'</div>
+      ${evtIcon(e.type)}
+      <div><span class="badge">${esc(e.player||e.team||'')}</span><span class="evtSmall">${esc(e.type||'')}</span>${e.detail?`<span class="evtSmall">• ${esc(e.detail)}</span>`:''}</div>
+    </div>`).join('')}</div>`;
+}
 async function fetchLive(){const r=await fetch('/api/live');if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
+function toggleRow(btn, id){
+  const row = document.getElementById('mrow_'+id);
+  if (!row) return;
+  row.classList.toggle('open');
+  const isOpen = row.classList.contains('open');
+  btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  btn.innerHTML = isOpen ? '▴' : '▾';
+}
 async function loadLive(){
   const loader=$('#loader'); loader.classList.add('show');
   try{
     const data = await fetchLive();
     const rows = data.rows || [];
     const groups = {};
-    rows.forEach(r=>{const key=`${r.league}__${r.flag||''}`;(groups[key] ||= {title:r.league, flag:r.flag, items:[]}).items.push(r);});
+    rows.forEach(r=>{
+      const key=`${r.league}__${r.flag||''}__${r.date||''}`;
+      (groups[key] ||= {title:r.league, flag:r.flag, date:r.date, items:[]}).items.push(r);
+    });
     const html = Object.values(groups).map(g=>{
-      const head=`<div class="lg-head">${g.flag?`<img class="flag" src="${g.flag}" alt="">`:``}<span class="lname">${g.title}</span></div>`;
-      const body=g.items.map(r=>{const {home,away}=parseTeams(r.match||'');const klass=stageClass(r.time||'');return `
-        <div class="match-card ${klass}" data-row="${(r.league+' '+r.match).toLowerCase()}">
-          <div class="m-left"><div class="stage">${(r.time||'').toUpperCase()}</div><div class="minute mini muted">Live</div></div>
-          <div class="m-mid"><div class="team"><span>${home}</span></div><div class="team"><span>${away}</span></div></div>
-          <div class="m-right">${r.score||'-'}</div>
-          <div class="m-cta"><button class="pill" onclick="openMatch(${r.id})">Lihat Data</button></div>
-        </div>`;}).join('');
+      const head = `
+        <div class="leagueRow">
+          <div class="leagueLeft">${g.flag?`<img class="flag" src="${g.flag}" alt="">`:``}<span>${esc(g.title||'')}</span></div>
+          <div class="leagueRight">${esc(g.date||'')}</div>
+        </div>`;
+      const body = (g.items||[]).map(r=>{
+        const {home,away}=parseTeams(r.match||'');
+        const st = (r.time||'').toUpperCase();
+        const tag = stageClassTag(st);
+        const homeLogo = r.home_logo || r.homeLogo || r.home_image || '';
+        const awayLogo = r.away_logo || r.awayLogo || r.away_image || '';
+        const events = r.events || [];
+        return `
+          <div class="matchRow" id="mrow_${r.id}" data-row="${esc((r.league+' '+r.match).toLowerCase())}">
+            <div class="matchTop">
+              <div class="stageTag ${tag}">${esc(st||'LIVE')}</div>
+              <div class="teams">
+                <div class="tline">${homeLogo?`<img class="teamlogo" src="${homeLogo}" alt="" loading="lazy">`:``}<div class="tname">${esc(home)}</div></div>
+                <div class="tline">${awayLogo?`<img class="teamlogo" src="${awayLogo}" alt="" loading="lazy">`:``}<div class="tname">${esc(away)}</div></div>
+              </div>
+              <div class="scorepill"><strong>${esc(r.score||'-')}</strong></div>
+              <button class="chev" aria-expanded="false" onclick="toggleRow(this, ${r.id})">▾</button>
+            </div>
+            <div class="eventsWrap">
+              ${eventsInline(events)}
+              <div class="divider"></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="pill" onclick="openMatch(${r.id})">Lihat Data</button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
       return `<div class="lg">${head}<div class="lg-body">${body||`<div class="muted mini" style="padding:8px 12px">Belum ada pertandingan.</div>`}</div></div>`;
     }).join('');
     $('#liveList').innerHTML = html || `<div class="muted" style="padding:12px">Belum ada pertandingan live.</div>`;
     applyFilter();
-  }catch{ $('#liveList').innerHTML = `<div class="muted" style="padding:12px">Gagal memuat live score.</div>`; }
-  finally{ loader.classList.remove('show'); }
+  }catch{
+    $('#liveList').innerHTML = `<div class="muted" style="padding:12px">Gagal memuat live score.</div>`;
+  }finally{
+    loader.classList.remove('show');
+  }
 }
 loadLive();
 setInterval(loadLive, 60000);
-
-/* ===== UPCOMING (NEXT) ===== */
 async function fetchUpcoming(h){const r=await fetch('/api/upcoming?hours='+h);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
 function renderUpcoming(data){
   const rows = data.rows || [];
   const groups={};
   rows.forEach(r=>{const key=`${r.league}__${r.flag||''}`;(groups[key] ||= {title:r.league, flag:r.flag, items:[]}).items.push(r);});
   const html = Object.values(groups).map(g=>{
-    const head = `<div class="up-head">${g.flag?`<img class="flag" src="${g.flag}" alt="">`:``}<span>${g.title}</span></div>`;
+    const head = `<div class="up-head">${g.flag?`<img class="flag" src="${g.flag}" alt="">`:``}<span>${esc(g.title)}</span></div>`;
     const body = g.items.map(r=>{
       const {home,away}=parseTeams(r.match||'');
       const {d,t}=splitKickoff(r.kickoff||'');
       const now = Date.now();
       return `
-        <div class="up-card" data-row="${(r.league+' '+r.match).toLowerCase()}" data-created="${now}" data-eta="${r.in}">
+        <div class="up-card" data-row="${esc((r.league+' '+r.match).toLowerCase())}" data-created="${now}" data-eta="${r.in}">
           <div class="kick">
-            <div class="clock"><div class="t-big">${t}</div><div class="t-sub">${d}</div></div>
+            <div class="clock"><div class="t-big">${esc(t)}</div><div class="t-sub">${esc(d)}</div></div>
             <div class="eta">in ${fmtEta(r.in)}</div>
           </div>
           <div class="up-mid">
-            <div class="team"><span>${home}</span></div>
-            <div class="team"><span>${away}</span></div>
+            <div class="team"><span>${esc(home)}</span></div>
+            <div class="team"><span>${esc(away)}</span></div>
           </div>
           <div class="up-right"><button class="pill" onclick="openMatch(${r.id})">Detail</button></div>
         </div>`;
@@ -382,26 +407,24 @@ function tickEta(){
 loadUpcoming(2);
 setInterval(()=>{ loadUpcoming(document.querySelector('.tab-btn.on')?.dataset.h||2); }, 120000);
 setInterval(tickEta, 30000);
-
-/* ===== FT ===== */
 async function fetchFinished(){const r=await fetch('/api/finished');if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
 async function loadFinished(){
   try{
     const data = await fetchFinished();
     const rows = (data.rows||[]).map(r => `
-      <tr data-row="${(r.league+' '+r.match).toLowerCase()}">
+      <tr data-row="${esc((r.league+' '+r.match).toLowerCase())}">
         <td>${leagueCell(r)}</td>
-        <td>${r.match}</td>
-        <td class="score">${r.score}</td>
-        <td>${r.status || 'FT'}</td>
+        <td>${esc(r.match)}</td>
+        <td class="score">${esc(r.score)}</td>
+        <td>${esc(r.status || 'FT')}</td>
       </tr>`).join('');
     $('#ftBody').innerHTML = rows || `<tr><td colspan="4" class="muted">Belum ada yang selesai hari ini.</td></tr>`;
     applyFilter();
-  }catch{ $('#ftBody').innerHTML = `<tr><td colspan="4" class="muted">Gagal memuat hasil akhir.</td></tr>`; }
+  }catch{
+    $('#ftBody').innerHTML = `<tr><td colspan="4" class="muted">Gagal memuat hasil akhir.</td></tr>`;
+  }
 }
 loadFinished();
-
-/* ===== MODAL controls ===== */
 const modal = $('#modal');
 const modalBody = $('#modalBody');
 const modalClose = $('#modalClose');
@@ -419,20 +442,18 @@ function hideModal(){
 modalClose.addEventListener('click', hideModal);
 modal.addEventListener('click', (e)=>{ if (e.target.classList.contains('backdrop')) hideModal(); });
 document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') hideModal(); });
-
-/* ===== DETAIL MATCH → tampil di modal ===== */
 async function fetchMatch(id){const r=await fetch('/api/match/'+id);if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}
 function statTable(title, home, away){
   const keys = new Set([...(home||[]), ...(away||[])].map(s=>s.type));
   const get = (arr, k) => (arr.find(x=>x.type===k)?.value ?? '-');
   return `
   <div class="panel">
-    <div class="head">${title}</div>
+    <div class="head">${esc(title)}</div>
     <div class="twrap">
       <table class="t">
         <thead><tr><th style="width:36%">Home</th><th>Stat</th><th style="width:36%">Away</th></tr></thead>
         <tbody>
-          ${[...keys].map(k=>`<tr><td>${get(home,k)}</td><td>${k}</td><td>${get(away,k)}</td></tr>`).join('')}
+          ${[...keys].map(k=>`<tr><td>${esc(get(home,k))}</td><td>${esc(k)}</td><td>${esc(get(away,k))}</td></tr>`).join('')}
         </tbody>
       </table>
     </div>
@@ -441,27 +462,16 @@ function statTable(title, home, away){
 function minuteTable(title, dist){
   return `
   <div class="panel">
-    <div class="head">${title.toUpperCase()}</div>
+    <div class="head">${esc(title.toUpperCase())}</div>
     <div class="twrap">
       <table class="t">
         <thead><tr><th>Time</th><th>Scored</th><th>Conceded</th></tr></thead>
         <tbody>
-          ${(dist||[]).map(r=>`<tr><td>${r.bucket}</td><td>${r.for}</td><td>${r.against}</td></tr>`).join('')}
+          ${(dist||[]).map(r=>`<tr><td>${esc(r.bucket)}</td><td>${esc(r.for)}</td><td>${esc(r.against)}</td></tr>`).join('')}
         </tbody>
       </table>
     </div>
   </div>`;
-}
-function eventsBlock(list){
-  if (!list || !list.length) return `<div class="muted mini">Belum ada event.</div>`;
-  return `
-    <div class="grid">
-      ${list.sort((a,b)=>a.time-b.time).map(e=>`
-        <div class="evt">
-          <div class="t">${e.time}'</div>
-          <div><span class="badge">${e.team}</span> — ${e.type}${e.detail?(' · '+e.detail):''}${e.player?(' · '+e.player):''}</div>
-        </div>`).join('')}
-    </div>`;
 }
 async function openMatch(id){
   showModal(`<div class="panel"><div class="head">MATCH DATA</div><div class="twrap"><div style="padding:12px" class="muted">Memuat detail…</div></div></div>`);
@@ -473,15 +483,15 @@ async function openMatch(id){
         <div class="head">SCOREBOARD</div>
         <div class="twrap">
           <div style="padding:14px" class="grid cols-3">
-            <div style="text-align:right;font-weight:800">${sb.home||'-'}</div>
-            <div style="text-align:center;font-size:28px;font-weight:900">${sb.score||'-'}</div>
-            <div style="font-weight:800">${sb.away||'-'}</div>
-            <div class="muted" style="grid-column:1 / -1; text-align:center">Status: <span class="pill">${sb.time||'-'}</span></div>
+            <div style="text-align:right;font-weight:800">${esc(sb.home||'-')}</div>
+            <div style="text-align:center;font-size:28px;font-weight:900">${esc(sb.score||'-')}</div>
+            <div style="font-weight:800">${esc(sb.away||'-')}</div>
+            <div class="muted" style="grid-column:1 / -1; text-align:center">Status: <span class="pill">${esc(sb.time||'-')}</span></div>
           </div>
           <div class="divider"></div>
           <div style="padding:12px">
             <div class="mini muted" style="margin-bottom:6px">Events</div>
-            ${eventsBlock(d.events)}
+            ${eventsInline(d.events)}
           </div>
         </div>
       </div>`;
