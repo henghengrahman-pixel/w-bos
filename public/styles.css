@@ -1,6 +1,20 @@
 :root{
-  --bg:#0a0a0c;--bg2:#111113;--card:#141418;--line:#22232e;
-  --text:#f3f4f6;--muted:#b5b8c6;--gold:#ffd86b;--gold2:#e1b64c;
+  /* Black - Yellow theme */
+  --bg:#070708;
+  --bg2:#0d0d10;
+  --card:#101015;
+  --line:#22232e;
+
+  --text:#f6f6f7;
+  --muted:#b7bac6;
+
+  --gold:#ffd86b;
+  --gold2:#e1b64c;
+
+  /* Heights for sticky/fixed layout */
+  --topbar-h:64px;
+  --ticker-h:38px;
+  --gap:10px;
 }
 
 /* ===== Reset & mobile stabil ===== */
@@ -11,134 +25,204 @@ body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color:var(--text);
   background:
+    linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75)),
     url("https://cdn.ope8k8.com/bandartotowebp/projectbarubandartoto/bgwebbandartotoketiga.webp") center/cover fixed,
     linear-gradient(180deg,var(--bg),var(--bg2));
   min-height:100vh;
-  touch-action:manipulation;                 /* cegah double-tap zoom */
-  overscroll-behavior:none;                  /* anti bounce */
+  touch-action:manipulation;
+  overscroll-behavior:none;
   -webkit-tap-highlight-color:transparent;
+
+  /* penting: biar konten gak ketutup topbar+ticker fixed */
+  padding-top: calc(var(--topbar-h) + var(--ticker-h) + var(--gap));
 }
-input,select,textarea,button{font-size:16px} /* cegah auto-zoom saat fokus */
+input,select,textarea,button{font-size:16px}
 
 .container{width:94%;max-width:1100px;margin:0 auto}
 
-/* ===== Topbar ===== */
-.topbar{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);border-bottom:1px solid #1b1b21}
-.topbar .wrap{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:10px 6px}
+/* ===== Topbar (FIXED) ===== */
+.topbar{
+  position:fixed;
+  top:0; left:0; right:0;
+  height:var(--topbar-h);
+  z-index:9999;
+  background:rgba(0,0,0,.78);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,216,107,.14);
+}
+.topbar .wrap{
+  height:var(--topbar-h);
+  display:flex;align-items:center;gap:12px;
+  justify-content:space-between;
+  padding:10px 6px;
+}
 .brand{display:flex;align-items:center;gap:10px;background:transparent;border:0;padding:0;cursor:pointer}
 .logo{height:46px;border-radius:10px}
 
 /* Search */
 .searchbox{position:relative;flex:1;max-width:520px}
 .searchbox input{
-  width:100%;padding:12px 40px 12px 12px;border-radius:12px;border:1px solid #2b2b38;
-  background:#0e0e14;color:#e8e9f0;font-weight:600;outline:none
+  width:100%;
+  padding:12px 42px 12px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,216,107,.20);
+  background:rgba(10,10,12,.92);
+  color:var(--text);
+  font-weight:700;
+  outline:none;
+}
+.searchbox input:focus{
+  border-color:rgba(255,216,107,.55);
+  box-shadow:0 0 0 3px rgba(255,216,107,.12);
 }
 .searchbox svg{
-  position:absolute;right:10px;top:50%;transform:translateY(-50%);
-  width:18px;height:18px;fill:#b5b8c6;opacity:.9
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;fill:var(--gold);opacity:.95
 }
 
-/* ===== Running Text / Ticker ===== */
+/* ===== Running Text / Ticker (FIXED under topbar) ===== */
 .ticker{
-  position:relative;
-  margin:10px auto 14px;
-  padding:8px 14px;
-  border-radius:14px;
-  background:linear-gradient(180deg,#1a1b20,#0f1014);
-  box-shadow:0 6px 20px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
-  overflow:hidden;border:1px solid #2a2c34;
+  position:fixed;
+  top:var(--topbar-h);
+  left:0; right:0;
+  height:var(--ticker-h);
+  z-index:9998;
+
+  display:flex;
+  align-items:center;
+
+  background:linear-gradient(180deg, rgba(0,0,0,.62), rgba(0,0,0,.78));
+  border-bottom:1px solid rgba(255,216,107,.16);
+  overflow:hidden;
 }
-.ticker::before{
-  content:"";
-  position:absolute;inset:0;border-radius:14px;padding:1px;
-  background:linear-gradient(90deg,#ddc168,#ffd86b,#e1b64c,#ddc168);
-  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;
-  animation:goldShift 6s linear infinite;
+.ticker__track{
+  display:flex;
+  gap:60px;
+  white-space:nowrap;
+  padding:0 14px;
+  animation:scrollX 26s linear infinite;
 }
-@keyframes goldShift{to{background-position:200% 0}}
-.ticker__track{display:flex;gap:60px;white-space:nowrap;animation:scrollX 28s linear infinite}
 .ticker:hover .ticker__track{animation-play-state:paused}
-.ticker span{color:#f6f7fb;letter-spacing:.2px;font-weight:600;opacity:.92}
+.ticker span{
+  color:#fff3c5;
+  letter-spacing:.25px;
+  font-weight:800;
+  opacity:.95;
+}
 @keyframes scrollX{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ===== Sticky slider wrapper ===== */
+.sticky-hero{
+  position:sticky;
+  top: calc(var(--topbar-h) + var(--ticker-h) + var(--gap));
+  z-index:50;
+}
 
 /* ===== Hero ===== */
 .hero{padding:14px 0 8px;text-align:center}
-.hero h1{margin:0 0 4px}
-.hero .date{margin:0;color:#f6e3a4}
+.hero h1{margin:0 0 4px;font-size:32px;letter-spacing:.3px}
+.hero .date{margin:0;color:#ffe6a5;font-weight:700}
 
 /* ===== Slider (no crop) ===== */
 .slider{
-  position:relative;margin:12px auto 10px;border-radius:14px;
-  overflow:hidden;border:1px solid #2e2e38;background:#0d0d11;
-  box-shadow:0 14px 50px rgba(0,0,0,.45) inset;
+  position:relative;
+  margin:12px auto 10px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(255,216,107,.18);
+  background:rgba(0,0,0,.55);
+  box-shadow:
+    0 20px 70px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.04);
 }
 .slide-track{display:flex;transition:transform .6s ease}
 .slide{
   min-width:100%;
-  aspect-ratio: 3 / 1;              /* desktop banner */
+  aspect-ratio: 3 / 1;
   display:grid;place-items:center;
-  background:linear-gradient(180deg,#0c0c11,#14141b);
+  background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.65));
 }
-@media (max-width:680px){ .slide{ aspect-ratio: 16 / 9; } } /* mobile 16:9 */
-.slide img{width:100%;height:100%;object-fit:contain;object-position:center;background:transparent}
+@media (max-width:680px){ .slide{ aspect-ratio: 16 / 9; } }
+.slide img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:transparent;
+}
 
+/* Controls */
 .ctrl{
   position:absolute;top:50%;transform:translateY(-50%);
-  background:rgba(0,0,0,.45);border:1px solid #3b3b45;color:#fff;
-  padding:6px 10px;border-radius:10px;cursor:pointer
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,216,107,.22);
+  color:var(--gold);
+  padding:8px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  user-select:none;
 }
-.ctrl:hover{background:rgba(0,0,0,.7)}
+.ctrl:hover{background:rgba(0,0,0,.78)}
 .prev{left:10px}.next{right:10px}
-.dots{position:absolute;left:0;right:0;bottom:8px;display:flex;gap:6px;justify-content:center}
-.dot{width:8px;height:8px;border-radius:999px;background:rgba(255,255,255,.35);border:1px solid rgba(0,0,0,.4)}
+.dots{position:absolute;left:0;right:0;bottom:10px;display:flex;gap:7px;justify-content:center}
+.dot{
+  width:9px;height:9px;border-radius:999px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,216,107,.20);
+}
 .dot.active{background:linear-gradient(180deg,var(--gold),var(--gold2));}
 
-/* ===== Auth buttons under slider (BESAR + efek cahaya lewat) ===== */
-.authbar{display:flex;gap:14px;justify-content:center;align-items:center;margin:12px auto 6px;position:relative;z-index:5;flex-wrap:wrap}
+/* ===== Auth buttons under slider ===== */
+.authbar{
+  display:flex;gap:14px;
+  justify-content:center;align-items:center;
+  margin:12px auto 6px;
+  position:relative;z-index:5;
+  flex-wrap:wrap;
+}
 .btn-cta{
   position:relative;
   display:inline-flex;align-items:center;justify-content:center;
   padding:14px 26px;
   border-radius:999px;
-  font-weight:800;letter-spacing:.3px;
+  font-weight:900;
+  letter-spacing:.3px;
   text-decoration:none;
   transition:transform .15s ease, filter .15s ease;
   min-width:160px;
-  box-shadow:0 10px 25px rgba(0,0,0,.35);
-  overflow:hidden; /* untuk shimmer */
+  box-shadow:0 12px 26px rgba(0,0,0,.45);
+  overflow:hidden;
 }
 .btn-cta:active{transform:translateY(1px)}
-
-/* Efek cahaya lewat (shimmer) — berlaku untuk kedua tombol */
 .btn-cta::before{
   content:"";
   position:absolute;
   top:-120%; left:-30%;
   width:45%; height:300%;
-  background:linear-gradient(115deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.18) 45%, rgba(255,255,255,.45) 50%, rgba(255,255,255,.18) 55%, rgba(255,255,255,0) 100%);
+  background:linear-gradient(115deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.16) 45%,
+    rgba(255,255,255,.42) 50%,
+    rgba(255,255,255,.16) 55%,
+    rgba(255,255,255,0) 100%);
   transform:translateX(-140%);
   animation:btnSweep 2.8s linear infinite;
   pointer-events:none;
-  filter:blur(.3px);
 }
 @keyframes btnSweep{to{transform:translateX(260%)}}
 
-/* Gold solid (Daftar) */
 .btn-gold{
-  color:#141418;
+  color:#121212;
   background:linear-gradient(180deg,#ffe08e,#ffd86b 55%,#e1b64c);
-  border:1px solid #f1c85e;
-  text-shadow:0 1px 0 rgba(255,255,255,.4);
+  border:1px solid rgba(255,216,107,.65);
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
 }
 .btn-gold:hover{filter:brightness(1.06)}
 
-/* Dark solid (Login) — NON-RGB */
 .btn-rgb{
-  color:#f5f7fb;
-  background:linear-gradient(180deg,#111318,#0f1116);
-  border:1px solid #2b2b38;
+  color:#fff6d6;
+  background:linear-gradient(180deg,#0b0b0e,#131318);
+  border:1px solid rgba(255,216,107,.22);
 }
 .btn-rgb:hover{filter:brightness(1.06)}
 
@@ -148,97 +232,123 @@ input,select,textarea,button{font-size:16px} /* cegah auto-zoom saat fokus */
 }
 
 /* ===== Panel + table ===== */
-.panel{background:rgba(16,16,22,.9);border:1px solid #2b2b36;border-radius:14px;padding:12px;margin:14px 0;box-shadow:0 20px 60px rgba(0,0,0,.45)}
-.panel .head{background:linear-gradient(180deg,#ffe8a3,#ffd86b);color:#221b00;border:1px solid #caa44a;border-radius:10px;padding:10px;text-align:center;font-weight:900;letter-spacing:.4px}
-.twrap{overflow:auto;border-radius:10px;margin-top:10px}
-.t{width:100%;border-collapse:collapse;font-size:15px}
-.t th,.t td{border:1px solid #34343f;padding:10px 8px}
-.t thead th{background:#1d1d26;color:#ffd86b;font-weight:900}
-.t tbody tr{background:#14141a}
-.t tbody tr:nth-child(odd){background:#191922}
+.panel{
+  background:rgba(0,0,0,.62);
+  border:1px solid rgba(255,216,107,.16);
+  border-radius:16px;
+  padding:12px;
+  margin:14px 0;
+  box-shadow:0 22px 70px rgba(0,0,0,.55);
+}
+.panel .head{
+  background:linear-gradient(180deg,#ffe08e,#ffd86b 55%,#e1b64c);
+  color:#1b1400;
+  border:1px solid rgba(255,216,107,.65);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-weight:900;
+  letter-spacing:.45px;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+}
+.twrap{overflow:auto;border-radius:12px;margin-top:10px}
+.t{
+  width:100%;
+  border-collapse:collapse;
+  font-size:15px;
+}
+.t th,.t td{
+  border:1px solid rgba(255,216,107,.10);
+  padding:10px 8px;
+}
+.t thead th{
+  background:rgba(0,0,0,.55);
+  color:var(--gold);
+  font-weight:900;
+}
+.t tbody tr{background:rgba(10,10,12,.60)}
+.t tbody tr:nth-child(odd){background:rgba(16,16,20,.62)}
 .t td.time{white-space:nowrap}
-.t td.score{text-align:center;font-weight:900;color:#ffe38f}
+.t td.score{text-align:center;font-weight:900;color:#ffe08e}
 
 /* ===== Loader & footer ===== */
-.loader{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);z-index:30}
+.loader{
+  position:fixed;inset:0;
+  display:none;place-items:center;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(2px);
+  z-index:99999;
+}
 .loader.show{display:grid}
-.loader-card{background:#0f0f14;border:1px solid #222230;border-radius:16px;padding:18px 22px;text-align:center}
-.spin{width:22px;height:22px;border-radius:999px;border:3px solid rgba(255,255,255,.25);border-top-color:#ffd36b;margin:8px auto 0;animation:spin 1s linear infinite}
+.loader-card{
+  background:rgba(0,0,0,.75);
+  border:1px solid rgba(255,216,107,.18);
+  border-radius:18px;
+  padding:18px 22px;
+  text-align:center;
+  box-shadow:0 18px 55px rgba(0,0,0,.6);
+}
+.spin{
+  width:22px;height:22px;border-radius:999px;
+  border:3px solid rgba(255,255,255,.20);
+  border-top-color:var(--gold);
+  margin:10px auto 0;
+  animation:spin 1s linear infinite
+}
 @keyframes spin{to{transform:rotate(360deg)}}
-.footer{color:#c9cbd7;text-align:center;margin:26px 0}
+.footer{color:#d6d6d8;text-align:center;margin:26px 0}
 
 /* ===== Mobile polish ===== */
 @media (max-width:680px){
+  :root{ --topbar-h:58px; --ticker-h:34px; }
+  .logo{height:42px}
   .topbar .wrap{padding:10px}
   .t{font-size:14px}
   .t th,.t td{padding:10px 8px}
 }
 
-/* ===== Tambahan khusus Live Score (sesuai perintah) ===== */
-.panel.live .head{
-  background:linear-gradient(90deg, rgba(255,60,60,.2), transparent);
+/* ===== Quick Menu (ikon rapi) ===== */
+.mc-fab{
+  position:fixed;left:14px;bottom:16px;z-index:9999;
+  padding:10px 18px;border:0;border-radius:16px;
+  background:linear-gradient(180deg,#ffe08e,#f7b500);
+  color:#3a1700;font-weight:900;
+  box-shadow:0 12px 28px rgba(0,0,0,.45);
+  cursor:pointer;
 }
-.panel.live .t td.score{
-  font-weight:700;
+.mc-fab:active{transform:translateY(1px)}
+.mc-sheet{
+  position:fixed;left:14px;bottom:78px;width:320px;max-width:92vw;z-index:9998;
+  background:linear-gradient(180deg,#ffeb99,#ffd24d);
+  border:1px solid rgba(255,216,107,.65);
+  border-radius:18px;
+  box-shadow:0 18px 44px rgba(0,0,0,.55);
+  color:#111;
+  transform:translateY(10px) scale(.98);
+  opacity:0;pointer-events:none;transition:.22s;
 }
-
-/* =========================================================
-   LIVE SCORE — HEADER FIX (lebih jelas, senada, ada efek)
-   (PASTE DIBAWAH ATURAN DI ATAS — INI MENG-OVERRIDE)
-   ========================================================= */
-:root{
-  --live:#ff3b3b;
-  --live2:#ff7a7a;
+.mc-sheet.show{transform:none;opacity:1;pointer-events:auto}
+.mc-head{padding:14px 16px 4px;font-weight:1000;font-size:18px;color:#7a2100}
+.mc-sub{padding:0 16px 8px;color:#5a4c2a;font-size:12px;font-weight:700}
+.mc-list{padding:8px 14px 16px}
+.mc-item{
+  display:flex;gap:12px;align-items:center;margin:10px 0;padding:12px;
+  background:rgba(0,0,0,.82);
+  border:1px solid rgba(255,216,107,.18);
+  border-radius:16px;color:#fff;
+  text-decoration:none;
 }
-
-.panel.live .head{
-  position: relative;
-  overflow: hidden;
-  padding-left: 36px;                 /* ruang buat dot LIVE di kiri */
-  color:#221b00;
-  background:linear-gradient(180deg,#ffe08e,#ffd86b 55%,#e1b64c); /* emas jelas */
-  border:1px solid #caa44a;
-  text-shadow:0 1px 0 rgba(255,255,255,.45);
-  box-shadow:
-    inset 0 0 0 1px rgba(255,216,107,.35),
-    0 8px 24px rgba(0,0,0,.25),
-    0 0 22px rgba(255,59,59,.15);
+.mc-icon{
+  width:44px;height:44px;border-radius:12px;background:rgba(255,216,107,.10);
+  display:grid;place-items:center;overflow:hidden;
+  border:1px solid rgba(255,216,107,.16);
 }
-
-/* Dot merah berdenyut “LIVE” */
-.panel.live .head::after{
-  content:"";
-  position:absolute; left:12px; top:50%; transform:translateY(-50%);
-  width:10px; height:10px; border-radius:50%;
-  background:radial-gradient(circle at 50% 50%, var(--live2), var(--live));
-  box-shadow:0 0 10px var(--live), 0 0 20px rgba(255,59,59,.6);
-  animation:pulseLive 1.4s ease-in-out infinite;
-}
-
-/* Kilauan (shine) melintas pelan */
-.panel.live .head::before{
-  content:"";
-  position:absolute; inset:-20% -40%;
-  background:linear-gradient(115deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,.15) 45%,
-    rgba(255,255,255,.45) 50%,
-    rgba(255,255,255,.15) 55%,
-    rgba(255,255,255,0) 100%);
-  transform:translateX(-120%);
-  animation:liveShine 3.2s linear infinite;
-  pointer-events:none;
-}
-
-/* Skor tetap tebal + tone senada */
-.panel.live .t td.score{ font-weight:800; color:#ffe08e; }
-
-/* Animations */
-@keyframes pulseLive{
-  0%  { box-shadow:0 0 0 0 rgba(255,59,59,.8), 0 0 20px rgba(255,59,59,.6); }
-  70% { box-shadow:0 0 0 12px rgba(255,59,59,0), 0 0 10px rgba(255,59,59,.5); }
-  100%{ box-shadow:0 0 0 0 rgba(255,59,59,0), 0 0 20px rgba(255,59,59,.6); }
-}
-@keyframes liveShine{
-  to { transform:translateX(120%); }
+.mc-icon img{display:block;width:100%;height:100%;object-fit:contain}
+.mc-ttl{font-weight:900;margin-bottom:4px}
+.mc-desc{font-size:12px;color:#d3d3d6}
+.mc-close{
+  display:block;width:calc(100% - 24px);
+  margin:10px auto 14px;padding:10px 14px;border-radius:999px;
+  border:1px solid rgba(255,216,107,.65);
+  background:#ffd24d;color:#5a1c00;font-weight:900;
 }
