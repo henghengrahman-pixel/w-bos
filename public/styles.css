@@ -25,13 +25,12 @@ body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color:var(--text);
 
-  /* HAPUS overlay gelap (yang bikin hitam2 ngikut) */
-  background:
-    url("https://cdn.ope8k8.com/bandartotowebp/projectbarubandartoto/bgwebbandartotoketiga.webp") center/cover no-repeat,
-    linear-gradient(180deg,var(--bg),var(--bg2));
-
-  /* kalau background fixed bikin efek aneh saat scroll, jangan pakai fixed */
-  background-attachment: scroll;
+  /* Background tetap di tempat */
+  background-image: url("https://cdn.ope8k8.com/bandartotowebp/projectbarubandartoto/bgwebbandartotoketiga.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;   /* INI yang bikin tidak ikut scroll */
 
   min-height:100vh;
   touch-action:manipulation;
