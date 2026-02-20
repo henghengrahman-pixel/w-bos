@@ -357,12 +357,8 @@ input,select,textarea,button{font-size:16px}
 }
 
 /* =======================================================================
-   ✅ FIX LIVE SCORE MOBILE (NAMA TIM JELAS + RAPI)
-   Tempel bagian ini paling bawah (atau replace kalau sudah ada live css).
-   ======================================================================= */
-
-/* =======================================================================
-   ✅ FIX LIVE SCORE (DESKTOP + MOBILE) — RAPI
+   ✅ LIVE SCORE FINAL FIX (DESKTOP CENTER + MOBILE RAPI)
+   Copas mulai sini sampai selesai.
    ======================================================================= */
 
 /* group league */
@@ -389,10 +385,10 @@ input,select,textarea,button{font-size:16px}
   box-shadow:0 18px 50px rgba(0,0,0,.45);
 }
 
-/* ===== BASE (desktop default) ===== */
+/* ===== BASE ===== */
 .match-row{
   display:grid;
-  grid-template-columns:60px minmax(0,1fr) auto;
+  grid-template-columns:70px minmax(0,1fr) auto;
   gap:10px;
   align-items:center;
   padding:12px;
@@ -411,10 +407,11 @@ input,select,textarea,button{font-size:16px}
   grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
   align-items:center;
   gap:14px;
+  justify-items:center;
 }
 
 /* team text */
-.teamline{min-width:0;display:flex;align-items:center;gap:8px}
+.teamline{min-width:0;display:flex;align-items:center;gap:8px;width:100%}
 .teamline.left{justify-content:flex-end;text-align:right}
 .teamline.right{justify-content:flex-start;text-align:left;flex-direction:row-reverse}
 .teamline span{
@@ -425,6 +422,7 @@ input,select,textarea,button{font-size:16px}
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  max-width:520px;
 }
 
 /* score */
@@ -436,9 +434,10 @@ input,select,textarea,button{font-size:16px}
   padding:7px 12px;
   font-size:13px;
   border:1px solid rgba(255,255,255,.10);
-  min-width:78px;
+  min-width:84px;
   text-align:center;
   white-space:nowrap;
+  justify-self:center;
 }
 
 /* actions */
@@ -475,25 +474,39 @@ input,select,textarea,button{font-size:16px}
 }
 .expand.show{display:block}
 
-/* ===== DESKTOP FIX: center VS/score (biar ga ketarik ke kanan) ===== */
+/* =======================================================================
+   ✅ DESKTOP: bikin skor/VS BENAR2 CENTER
+   Actions dibuat ABSOLUTE (tidak narik layout)
+   ======================================================================= */
 @media (min-width:521px){
   .match-row{
-    grid-template-columns:70px minmax(0,1fr) 170px; /* actions fixed */
+    position:relative;
+    grid-template-columns:70px minmax(0,1fr); /* cuma time + mid */
+    padding-right:200px; /* ruang aman untuk tombol kanan */
   }
-  .m-mid{
-    justify-items:center;  /* kolom home/score/away rata tengah */
+  .m-actions{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    display:flex;
+    gap:8px;
+    align-items:center;
+    justify-content:flex-end;
   }
-  .teamline.left{width:100%}
-  .teamline.right{width:100%}
+  .m-mid{justify-items:center}
   .score-pill{justify-self:center}
-  .teamline span{max-width:460px}
-}
-@media (min-width:900px){
-  .match-row{grid-template-columns:80px minmax(0,1fr) 190px;}
-  .teamline span{max-width:520px;}
 }
 
-/* ===== MOBILE FIX: time + actions di atas, skor tetap center ===== */
+/* layar besar: tambah ruang kanan */
+@media (min-width:900px){
+  .match-row{padding-right:220px;}
+  .teamline span{max-width:600px;}
+}
+
+/* =======================================================================
+   ✅ MOBILE: time + actions atas, score tetap center
+   ======================================================================= */
 @media (max-width:520px){
   .match-row{
     grid-template-columns:1fr auto;
@@ -503,10 +516,16 @@ input,select,textarea,button{font-size:16px}
     align-items:start;
     gap:10px 10px;
     padding:12px;
+    padding-right:12px; /* reset dari desktop */
+    position:static;    /* reset dari desktop */
   }
 
   .m-left{grid-area:time}
-  .m-actions{grid-area:actions}
+  .m-actions{
+    grid-area:actions;
+    position:static;
+    transform:none;
+  }
   .m-mid{grid-area:mid}
 
   .m-mid{
@@ -520,6 +539,7 @@ input,select,textarea,button{font-size:16px}
   .teamline.left{justify-content:flex-end;text-align:right}
   .teamline.right{justify-content:flex-start;text-align:left;flex-direction:row-reverse}
 
+  /* nama tim boleh 2 baris biar jelas */
   .teamline span{
     white-space:normal;
     display:-webkit-box;
@@ -529,10 +549,10 @@ input,select,textarea,button{font-size:16px}
     text-overflow:ellipsis;
     font-size:14px;
     line-height:1.2;
+    max-width:100%;
   }
 
   .score-pill{
-    justify-self:center;
     min-width:92px;
     font-size:13px;
     padding:8px 12px;
