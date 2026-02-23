@@ -14,12 +14,32 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// INI PENTING: parent folder = /public (tempat web prediksi bola + admin + prediksitoto)
+const PUBLIC_DIR = path.join(__dirname, "..");
+
 /* ===================== APP ===================== */
 const app = express();
 app.use(express.json());
 
-// static folder aman walau dijalankan dari root mana pun
-app.use(express.static(path.join(__dirname, "public")));
+/**
+ * Serve SEMUA file website dari folder /public
+ * Jadi:
+ * /                -> public/index.html (prediksi bola)
+ * /live.html       -> public/live.html
+ * /admin/...       -> public/admin/...
+ * /prediksitoto/...-> public/prediksitoto/...
+ */
+app.use(express.static(PUBLIC_DIR));
+
+/* Homepage biar gak "Cannot GET /" */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, "index.html"));
+});
+
+/* optional: kalau akses /prediksitoto tanpa slash */
+app.get("/prediksitoto", (req, res) => {
+  res.redirect("/prediksitoto/");
+});
 
 /* ===================== ADMIN KEY ===================== */
 const ADMIN_KEY = (process.env.ADMIN_KEY || "").trim();
@@ -40,13 +60,11 @@ const SHIO = [
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-
 function randDigits(len) {
   let s = "";
   for (let i = 0; i < len; i++) s += String(randInt(0, 9));
   return s;
 }
-
 function uniqueList(count, make) {
   const set = new Set();
   while (set.size < count) set.add(make());
@@ -54,7 +72,7 @@ function uniqueList(count, make) {
 }
 
 function makePrediction(marketName, dayKey) {
-  const angkaMain = randDigits(5); // contoh: 39785
+  const angkaMain = randDigits(5);
   const top4d = uniqueList(5, () => randDigits(4)).join("*");
   const top3d = uniqueList(5, () => randDigits(3)).join("*");
   const top2d = uniqueList(10, () => randDigits(2)).join("*");
@@ -89,7 +107,6 @@ app.get("/api/prediksitoto/today", (req, res) => {
   const market = getMarket(slug);
   if (!market) return res.status(404).json({ error: "Market not found" });
 
-  // patok WIB (Asia/Jakarta)
   const dayKey = getDayKeyInTZ("Asia/Jakarta");
   const data = getPrediction(slug, dayKey);
 
@@ -100,16 +117,12 @@ app.get("/api/prediksitoto/today", (req, res) => {
 app.post("/api/admin/markets", requireAdmin, (req, res) => {
   const m = req.body || {};
   const must = ["slug", "name"];
-  for (const k of must) {
-    if (!m[k]) return res.status(400).json({ error: `Missing: ${k}` });
-  }
+  for (const k of must) if (!m[k]) return res.status(400).json({ error: `Missing: ${k}` });
 
-  // publish_times optional
   let times = m.publish_times || [];
   if (typeof times === "string") times = times.split(",").map(s => s.trim()).filter(Boolean);
   if (!Array.isArray(times)) times = [];
 
-  // reset_time optional (default 00:00)
   const reset_time = (m.reset_time || "00:00").trim();
 
   upsertMarket({
@@ -127,11 +140,6 @@ app.post("/api/admin/markets", requireAdmin, (req, res) => {
 });
 
 /* ===================== AUTO RESET + AUTO GENERATE ===================== */
-/**
- * JAM 00:00 WIB:
- * - hapus prediksi hari itu
- * - generate prediksi baru utk semua pasaran
- */
 cron.schedule("0 0 * * *", () => {
   const dayKey = getDayKeyInTZ("Asia/Jakarta");
   for (const m of listMarkets()) {
@@ -145,9 +153,6 @@ cron.schedule("0 0 * * *", () => {
   }
 }, { timezone: "Asia/Jakarta" });
 
-/**
- * OPSIONAL: generate ulang di jam publish_times (WIB)
- */
 cron.schedule("* * * * *", () => {
   const now = getHHMMInTZ("Asia/Jakarta");
   const dayKey = getDayKeyInTZ("Asia/Jakarta");
