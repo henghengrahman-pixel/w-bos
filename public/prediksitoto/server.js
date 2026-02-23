@@ -1,21 +1,33 @@
+// server.js
 import express from "express";
 import cron from "node-cron";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import {
   upsertMarket, listMarkets, getMarket,
   upsertPrediction, getPrediction, clearPrediction,
   logJobOnce, getDayKeyInTZ, getHHMMInTZ
 } from "./db.js";
 
+/* ===================== PATH SAFE (ESM) ===================== */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/* ===================== APP ===================== */
 const app = express();
 app.use(express.json());
-app.use(express.static("public"));
 
+// static folder aman walau dijalankan dari root mana pun
+app.use(express.static(path.join(__dirname, "public")));
+
+/* ===================== ADMIN KEY ===================== */
 const ADMIN_KEY = (process.env.ADMIN_KEY || "").trim();
 if (!ADMIN_KEY) console.warn("⚠️ Set ADMIN_KEY di Railway Variables!");
 
 function requireAdmin(req, res, next) {
   const key = String(req.headers["x-admin-key"] || "");
-  if (key !== ADMIN_KEY) return res.status(401).json({ error: "Unauthorized" });
+  if (!ADMIN_KEY || key !== ADMIN_KEY) return res.status(401).json({ error: "Unauthorized" });
   next();
 }
 
@@ -43,13 +55,9 @@ function uniqueList(count, make) {
 
 function makePrediction(marketName, dayKey) {
   const angkaMain = randDigits(5); // contoh: 39785
-
   const top4d = uniqueList(5, () => randDigits(4)).join("*");
   const top3d = uniqueList(5, () => randDigits(3)).join("*");
-
-  // 2D biasanya lebih banyak
   const top2d = uniqueList(10, () => randDigits(2)).join("*");
-
   const colokBebas = uniqueList(2, () => String(randInt(0, 9))).join(" / ");
   const colok2d = uniqueList(2, () => randDigits(2)).join(" / ");
   const shioJitu = SHIO[randInt(0, SHIO.length - 1)];
@@ -66,17 +74,22 @@ function makePrediction(marketName, dayKey) {
   };
 }
 
+/* ===================== HEALTH CHECK ===================== */
+app.get("/api/ping", (req, res) => {
+  res.json({ ok: true, app: "prediksitoto", ts: Date.now() });
+});
+
 /* ===================== PUBLIC API ===================== */
 app.get("/api/markets", (req, res) => {
   res.json({ markets: listMarkets() });
 });
 
 app.get("/api/prediksitoto/today", (req, res) => {
-  const slug = String(req.query.market || "");
+  const slug = String(req.query.market || "").trim();
   const market = getMarket(slug);
   if (!market) return res.status(404).json({ error: "Market not found" });
 
-  // prediksi kita patok WIB (Asia/Jakarta) sesuai permintaan kamu
+  // patok WIB (Asia/Jakarta)
   const dayKey = getDayKeyInTZ("Asia/Jakarta");
   const data = getPrediction(slug, dayKey);
 
@@ -87,9 +100,11 @@ app.get("/api/prediksitoto/today", (req, res) => {
 app.post("/api/admin/markets", requireAdmin, (req, res) => {
   const m = req.body || {};
   const must = ["slug", "name"];
-  for (const k of must) if (!m[k]) return res.status(400).json({ error: `Missing: ${k}` });
+  for (const k of must) {
+    if (!m[k]) return res.status(400).json({ error: `Missing: ${k}` });
+  }
 
-  // publish_times optional, bisa kosong
+  // publish_times optional
   let times = m.publish_times || [];
   if (typeof times === "string") times = times.split(",").map(s => s.trim()).filter(Boolean);
   if (!Array.isArray(times)) times = [];
@@ -100,9 +115,9 @@ app.post("/api/admin/markets", requireAdmin, (req, res) => {
   upsertMarket({
     slug: String(m.slug).trim(),
     name: String(m.name).trim(),
-    timezone: "Asia/Jakarta",     // semua ikut WIB (sesuai request)
-    reset_time,                  // default 00:00
-    publish_times: times,        // kalau kamu mau generate ulang di jam tertentu
+    timezone: "Asia/Jakarta",
+    reset_time,
+    publish_times: times,
     logo_url: m.logo_url ? String(m.logo_url).trim() : null,
     tagline: m.tagline ? String(m.tagline).trim() : null,
     desc: m.desc ? String(m.desc).trim() : null
@@ -114,14 +129,13 @@ app.post("/api/admin/markets", requireAdmin, (req, res) => {
 /* ===================== AUTO RESET + AUTO GENERATE ===================== */
 /**
  * JAM 00:00 WIB:
- * - hapus prediksi hari itu (biar bersih)
+ * - hapus prediksi hari itu
  * - generate prediksi baru utk semua pasaran
  */
 cron.schedule("0 0 * * *", () => {
   const dayKey = getDayKeyInTZ("Asia/Jakarta");
   for (const m of listMarkets()) {
     const jobKey = "daily_00_reset_generate";
-    // supaya cuma sekali jalan per hari/pasaran
     if (logJobOnce(m.slug, dayKey, jobKey)) {
       clearPrediction(m.slug, dayKey);
       const payload = makePrediction(m.name, dayKey);
@@ -132,8 +146,7 @@ cron.schedule("0 0 * * *", () => {
 }, { timezone: "Asia/Jakarta" });
 
 /**
- * OPSIONAL: kalau kamu isi publish_times per pasaran,
- * sistem akan generate ulang di jam-jam itu juga (WIB).
+ * OPSIONAL: generate ulang di jam publish_times (WIB)
  */
 cron.schedule("* * * * *", () => {
   const now = getHHMMInTZ("Asia/Jakarta");
@@ -153,5 +166,6 @@ cron.schedule("* * * * *", () => {
   }
 }, { timezone: "Asia/Jakarta" });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log("Server running on", PORT));
+/* ===================== START ===================== */
+const PORT = Number(process.env.PORT || 3000);
+app.listen(PORT, () => console.log("✅ Server running on", PORT));
