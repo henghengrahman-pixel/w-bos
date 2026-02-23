@@ -1,81 +1,44 @@
 const $ = (id) => document.getElementById(id);
 
-function headers(){
-  return {
-    "Content-Type": "application/json",
-    "x-admin-key": $("key").value.trim()
-  };
+function setMsg(text, ok=true){
+  $("msg").className = ok ? "msg ok" : "msg bad";
+  $("msg").textContent = text;
 }
 
-async function refreshMarkets(){
-  const res = await fetch("/api/markets");
-  const j = await res.json();
-  const mk = j.markets || [];
-  $("market").innerHTML = mk.map(m => `<option value="${m.slug}">${m.name}</option>`).join("");
-}
-
-$("saveMarket").onclick = async () => {
-  $("msg").textContent = "Menyimpan pasaran...";
+$("save").onclick = async () => {
   const body = {
-    slug: $("m_slug").value.trim(),
-    name: $("m_name").value.trim(),
-    timezone: $("m_tz").value.trim(),
-    reset_time: $("m_reset").value.trim(),
-    publish_times: $("m_publish").value.trim(),
-    logo_url: $("m_logo").value.trim(),
-    tagline: $("m_tagline").value.trim(),
-    desc: $("m_desc").value.trim()
+    slug: $("slug").value.trim(),
+    name: $("name").value.trim(),
+    logo_url: $("logo_url").value.trim(),
+    tagline: $("tagline").value.trim(),
+    desc: $("desc").value.trim(),
+    reset_time: $("reset_time").value.trim() || "00:00",
+    publish_times: $("publish_times").value.trim() // boleh kosong, atau "12:00,18:00"
   };
 
-  const res = await fetch("/api/admin/markets", { method:"POST", headers: headers(), body: JSON.stringify(body) });
-  const j = await res.json();
-  $("msg").textContent = res.ok ? "✅ Pasaran tersimpan. Buka /prediksitoto/ untuk lihat." : `❌ ${j.error || "gagal"}`;
-  if(res.ok) await refreshMarkets();
-};
+  if(!body.slug || !body.name){
+    return setMsg("Slug dan Nama wajib diisi.", false);
+  }
 
-$("saveDraft").onclick = async () => {
-  $("msg").textContent = "Menyimpan draft...";
-  const payload = {
-    title: $("title").value.trim(),
-    angkaMain: $("angkaMain").value.trim(),
-    top4d: $("top4d").value.trim(),
-    top3d: $("top3d").value.trim(),
-    top2d: $("top2d").value.trim(),
-    colokBebas: $("colokBebas").value.trim(),
-    colok2d: $("colok2d").value.trim(),
-    shioJitu: $("shioJitu").value.trim()
-  };
-
-  const res = await fetch("/api/admin/staging", {
-    method:"POST",
-    headers: headers(),
-    body: JSON.stringify({ market_slug: $("market").value, payload })
+  setMsg("Menyimpan...");
+  const res = await fetch("/api/admin/markets", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-admin-key": $("key").value.trim()
+    },
+    body: JSON.stringify(body)
   });
-  const j = await res.json();
-  $("msg").textContent = res.ok ? "✅ Draft tersimpan. Akan auto publish sesuai jam." : `❌ ${j.error || "gagal"}`;
-};
 
-$("publishNow").onclick = async () => {
-  $("msg").textContent = "Publish...";
-  const res = await fetch("/api/admin/publish_now", {
-    method:"POST",
-    headers: headers(),
-    body: JSON.stringify({ market_slug: $("market").value })
-  });
-  const j = await res.json();
-  $("msg").textContent = res.ok ? `✅ Published (${j.day})` : `❌ ${j.error || "gagal"}`;
-};
+  const j = await res.json().catch(()=>({}));
+  if(!res.ok) return setMsg(j.error || "Gagal simpan.", false);
 
-$("resetNow").onclick = async () => {
-  if(!confirm("Reset prediksi hari ini untuk pasaran ini?")) return;
-  $("msg").textContent = "Reset...";
-  const res = await fetch("/api/admin/reset_now", {
-    method:"POST",
-    headers: headers(),
-    body: JSON.stringify({ market_slug: $("market").value })
-  });
-  const j = await res.json();
-  $("msg").textContent = res.ok ? `✅ Reset (${j.day})` : `❌ ${j.error || "gagal"}`;
+  setMsg("✅ Pasaran tersimpan. Buka /prediksitoto/ untuk lihat.");
+  // optional: bersihkan input
+  $("slug").value = "";
+  $("name").value = "";
+  $("logo_url").value = "";
+  $("tagline").value = "";
+  $("desc").value = "";
+  $("publish_times").value = "";
 };
-
-refreshMarkets();
