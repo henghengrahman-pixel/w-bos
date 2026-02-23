@@ -3,73 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prediksi Togel WDBOS</title>
+  <title>Dashboard Angka</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-logo"></div>
-        <div class="brand-name">WDBOS</div>
-      </div>
-
-      <div class="search">
-        <span class="search-ic">🔎</span>
-        <input id="q" placeholder="Cari pasaran / keyword..." />
-      </div>
-
-      <button class="menuBtn" title="Menu">⋮</button>
-    </div>
-  </header>
-
   <main class="wrap">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="kicker">PREDIKSI TOGEL</div>
-        <h1>PREDIKSI TOGEL WDBOS</h1>
-        <p class="sub">
-          Prediksi akurat untuk berbagai pasaran togel terpopuler. Pilih pasaran, lalu klik
-          “Lihat Prediksi” untuk menampilkan data.
-        </p>
+    <div class="hr"></div>
+    <div class="title">PREDIKSI HARI INI LENGKAP • 2026</div>
+    <div class="hr"></div>
 
-        <div class="hero-panel">
-          <div class="hero-form">
-            <div class="field">
-              <div class="label">Pilih Pasaran Togel</div>
-              <div class="selectWrap">
-                <select id="marketTop">
-                  <option value="">— Pilih Pasaran —</option>
-                </select>
-              </div>
-            </div>
+    <div class="tools">
+      <div class="spacer"></div>
+      <select id="marketFilter">
+        <option value="">Cari Pasaran</option>
+      </select>
+    </div>
 
-            <button id="goTop" class="goBtn">
-              <span class="goIcon">🔮</span>
-              LIHAT PREDIKSI
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- LIST HEADER -->
-    <section class="listHead">
-      <div class="hr"></div>
-      <div class="listTitle">PREDIKSI TOGEL HARI INI LENGKAP OMTOGEL 2026</div>
-      <div class="hr"></div>
-
-      <div class="listTools">
-        <div class="spacer"></div>
-        <select id="marketFilter" class="filterSelect">
-          <option value="">Cari Pasaran</option>
-        </select>
-      </div>
-    </section>
-
-    <!-- LIST -->
     <section id="list" class="list"></section>
   </main>
 
