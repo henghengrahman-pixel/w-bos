@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="wrap">
+    <h1>ADMIN • PASARAN & PREDIKSI</h1>
+
+    <div class="box">
+      <label>ADMIN KEY</label>
+      <input id="key" placeholder="ADMIN_KEY" />
+
+      <hr>
+
+      <h2>Tambah / Edit Pasaran</h2>
+      <label>Slug (unik) contoh: vietnam_pools</label>
+      <input id="m_slug" placeholder="vietnam_pools" />
+
+      <label>Nama tampil</label>
+      <input id="m_name" placeholder="VIETNAM POOLS" />
+
+      <label>Timezone</label>
+      <input id="m_tz" value="Asia/Phnom_Penh" />
+
+      <label>Reset Time (HH:MM)</label>
+      <input id="m_reset" value="00:00" />
+
+      <label>Publish Times (pisah koma) contoh: 13:00,16:30</label>
+      <input id="m_publish" placeholder="13:00,16:30" />
+
+      <label>Logo URL (opsional)</label>
+      <input id="m_logo" placeholder="https://.../logo.png" />
+
+      <label>Tagline (opsional)</label>
+      <input id="m_tagline" placeholder="PASANG ... TOGEL ONLINE" />
+
+      <label>Desc (opsional)</label>
+      <input id="m_desc" placeholder="Prediksi ... hari ini..." />
+
+      <button id="saveMarket">SIMPAN PASARAN</button>
+
+      <hr>
+
+      <h2>Input Prediksi (Draft) per Pasaran</h2>
+      <label>Pilih Pasaran</label>
+      <select id="market"></select>
+
+      <label>Title</label><input id="title" value="OMTOGEL PREDIKSI" />
+      <label>Angka Main</label><input id="angkaMain" placeholder="39785" />
+      <label>Top 4D</label><input id="top4d" placeholder="3978*3975*..." />
+      <label>Top 3D</label><input id="top3d" placeholder="397*398*..." />
+      <label>Top 2D</label><input id="top2d" placeholder="39*37*..." />
+      <label>Colok Bebas</label><input id="colokBebas" placeholder="9 / 5" />
+      <label>Colok 2D</label><input id="colok2d" placeholder="78 / 97" />
+      <label>Shio Jitu</label><input id="shioJitu" placeholder="Kelinci" />
+
+      <button id="saveDraft">SIMPAN DRAFT (AUTO PUBLISH SESUAI JAM)</button>
+      <button id="publishNow">PUBLISH SEKARANG</button>
+      <button class="danger" id="resetNow">RESET HARI INI</button>
+
+      <div id="msg"></div>
+    </div>
+  </main>
+
+  <script src="./admin.js"></script>
+</body>
+</html>
