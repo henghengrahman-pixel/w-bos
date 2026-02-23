@@ -3,66 +3,47 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin</title>
+  <title>Admin Pasaran</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <main class="wrap">
-    <h1>ADMIN • PASARAN & PREDIKSI</h1>
+    <h1>ADMIN • TAMBAH PASARAN</h1>
 
     <div class="box">
       <label>ADMIN KEY</label>
-      <input id="key" placeholder="ADMIN_KEY" />
+      <input id="key" placeholder="Masukkan ADMIN_KEY" />
 
-      <hr>
+      <div class="hr"></div>
 
-      <h2>Tambah / Edit Pasaran</h2>
-      <label>Slug (unik) contoh: vietnam_pools</label>
-      <input id="m_slug" placeholder="vietnam_pools" />
+      <label>Slug (unik, tanpa spasi) contoh: vietnam_pools</label>
+      <input id="slug" placeholder="vietnam_pools" />
 
-      <label>Nama tampil</label>
-      <input id="m_name" placeholder="VIETNAM POOLS" />
-
-      <label>Timezone</label>
-      <input id="m_tz" value="Asia/Phnom_Penh" />
-
-      <label>Reset Time (HH:MM)</label>
-      <input id="m_reset" value="00:00" />
-
-      <label>Publish Times (pisah koma) contoh: 13:00,16:30</label>
-      <input id="m_publish" placeholder="13:00,16:30" />
+      <label>Nama Pasaran (tampil) contoh: VIETNAM POOLS</label>
+      <input id="name" placeholder="VIETNAM POOLS" />
 
       <label>Logo URL (opsional)</label>
-      <input id="m_logo" placeholder="https://.../logo.png" />
+      <input id="logo_url" placeholder="https://.../logo.png" />
 
       <label>Tagline (opsional)</label>
-      <input id="m_tagline" placeholder="PASANG ... TOGEL ONLINE" />
+      <input id="tagline" placeholder="PASANG ... ONLINE" />
 
-      <label>Desc (opsional)</label>
-      <input id="m_desc" placeholder="Prediksi ... hari ini..." />
+      <label>Deskripsi (opsional)</label>
+      <input id="desc" placeholder="Deskripsi singkat..." />
 
-      <button id="saveMarket">SIMPAN PASARAN</button>
+      <label>Reset jam (HH:MM) WIB</label>
+      <input id="reset_time" value="00:00" />
 
-      <hr>
+      <label>Update ulang jam (opsional, pisah koma) contoh: 12:00,18:00</label>
+      <input id="publish_times" placeholder="12:00,18:00" />
 
-      <h2>Input Prediksi (Draft) per Pasaran</h2>
-      <label>Pilih Pasaran</label>
-      <select id="market"></select>
-
-      <label>Title</label><input id="title" value="OMTOGEL PREDIKSI" />
-      <label>Angka Main</label><input id="angkaMain" placeholder="39785" />
-      <label>Top 4D</label><input id="top4d" placeholder="3978*3975*..." />
-      <label>Top 3D</label><input id="top3d" placeholder="397*398*..." />
-      <label>Top 2D</label><input id="top2d" placeholder="39*37*..." />
-      <label>Colok Bebas</label><input id="colokBebas" placeholder="9 / 5" />
-      <label>Colok 2D</label><input id="colok2d" placeholder="78 / 97" />
-      <label>Shio Jitu</label><input id="shioJitu" placeholder="Kelinci" />
-
-      <button id="saveDraft">SIMPAN DRAFT (AUTO PUBLISH SESUAI JAM)</button>
-      <button id="publishNow">PUBLISH SEKARANG</button>
-      <button class="danger" id="resetNow">RESET HARI INI</button>
+      <button id="save">SIMPAN PASARAN</button>
 
       <div id="msg"></div>
+
+      <div class="hint">
+        Cek list pasaran: <a href="/prediksitoto/" target="_blank">/prediksitoto/</a>
+      </div>
     </div>
   </main>
 
