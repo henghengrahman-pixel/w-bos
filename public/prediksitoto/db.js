@@ -1,11 +1,25 @@
 import Database from "better-sqlite3";
 import fs from "fs";
+import path from "path";
 
-const DB_DIR = process.env.DB_DIR || "./data";
-if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
+/* ===================== DB PATH SAFE ===================== */
+// Railway rekomendasi pakai Volume mount ke /data
+// Set ENV:
+// DB_DIR=/data
+// Kalau tidak ada, fallback ke folder project /data
 
-const db = new Database(`${DB_DIR}/app.db`);
+const DB_DIR = process.env.DB_DIR
+  ? process.env.DB_DIR
+  : path.join(process.cwd(), "data");
 
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+}
+
+const dbPath = path.join(DB_DIR, "app.db");
+const db = new Database(dbPath);
+
+/* ===================== TABLE INIT ===================== */
 db.exec(`
 CREATE TABLE IF NOT EXISTS markets (
   slug TEXT PRIMARY KEY,
@@ -41,6 +55,7 @@ CREATE TABLE IF NOT EXISTS job_log (
 );
 `);
 
+/* ===================== MARKETS ===================== */
 export function upsertMarket(m) {
   db.prepare(`
     INSERT INTO markets(slug,name,timezone,reset_time,publish_times,logo_url,tagline,desc)
@@ -78,6 +93,7 @@ export function getMarket(slug) {
   return { ...r, publish_times: JSON.parse(r.publish_times || "[]") };
 }
 
+/* ===================== STAGING ===================== */
 export function setStaging(slug, payload) {
   const now = new Date().toISOString();
   db.prepare(`
@@ -91,11 +107,16 @@ export function setStaging(slug, payload) {
 }
 
 export function getStaging(slug) {
-  const r = db.prepare(`SELECT payload, updated_at FROM staging WHERE market_slug=?`).get(slug);
+  const r = db.prepare(`
+    SELECT payload, updated_at 
+    FROM staging 
+    WHERE market_slug=?
+  `).get(slug);
   if (!r) return null;
   return { payload: JSON.parse(r.payload), updated_at: r.updated_at };
 }
 
+/* ===================== PREDICTIONS ===================== */
 export function upsertPrediction(slug, dayKey, payload) {
   const now = new Date().toISOString();
   db.prepare(`
@@ -109,40 +130,62 @@ export function upsertPrediction(slug, dayKey, payload) {
 }
 
 export function getPrediction(slug, dayKey) {
-  const r = db.prepare(`SELECT payload, updated_at FROM predictions WHERE market_slug=? AND day=?`).get(slug, dayKey);
+  const r = db.prepare(`
+    SELECT payload, updated_at 
+    FROM predictions 
+    WHERE market_slug=? AND day=?
+  `).get(slug, dayKey);
   if (!r) return null;
   return { payload: JSON.parse(r.payload), updated_at: r.updated_at };
 }
 
 export function clearPrediction(slug, dayKey) {
-  db.prepare(`DELETE FROM predictions WHERE market_slug=? AND day=?`).run(slug, dayKey);
+  db.prepare(`
+    DELETE FROM predictions 
+    WHERE market_slug=? AND day=?
+  `).run(slug, dayKey);
 }
 
+/* ===================== JOB LOG ===================== */
 export function logJobOnce(slug, dayKey, jobKey) {
   const now = new Date().toISOString();
   try {
-    db.prepare(`INSERT INTO job_log(market_slug,day,job_key,ran_at) VALUES(?,?,?,?)`).run(slug, dayKey, jobKey, now);
+    db.prepare(`
+      INSERT INTO job_log(market_slug,day,job_key,ran_at)
+      VALUES(?,?,?,?)
+    `).run(slug, dayKey, jobKey, now);
     return true;
   } catch {
     return false;
   }
 }
 
+/* ===================== TIME HELPERS ===================== */
 export function getDayKeyInTZ(tz) {
   const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: tz, year:"numeric", month:"2-digit", day:"2-digit"
+    timeZone: tz,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
   }).formatToParts(new Date());
-  const y = parts.find(p=>p.type==="year").value;
-  const m = parts.find(p=>p.type==="month").value;
-  const d = parts.find(p=>p.type==="day").value;
+
+  const y = parts.find(p => p.type === "year").value;
+  const m = parts.find(p => p.type === "month").value;
+  const d = parts.find(p => p.type === "day").value;
+
   return `${y}-${m}-${d}`;
 }
 
 export function getHHMMInTZ(tz) {
   const parts = new Intl.DateTimeFormat("en-GB", {
-    timeZone: tz, hour:"2-digit", minute:"2-digit", hourCycle:"h23"
+    timeZone: tz,
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
   }).formatToParts(new Date());
-  const hh = parts.find(p=>p.type==="hour").value;
-  const mm = parts.find(p=>p.type==="minute").value;
+
+  const hh = parts.find(p => p.type === "hour").value;
+  const mm = parts.find(p => p.type === "minute").value;
+
   return `${hh}:${mm}`;
 }
