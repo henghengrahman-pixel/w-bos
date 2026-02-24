@@ -3,23 +3,67 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard Angka</title>
+  <title>PREDIKSI TOGEL WDBANDAR</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <main class="wrap">
-    <div class="hr"></div>
-    <div class="title">PREDIKSI HARI INI LENGKAP • 2026</div>
-    <div class="hr"></div>
+  <div class="side left"></div>
+  <div class="side right"></div>
 
-    <div class="tools">
-      <div class="spacer"></div>
-      <select id="marketFilter">
-        <option value="">Cari Pasaran</option>
-      </select>
+  <header class="topbar">
+    <div class="inner">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>WD BANDAR</div>
+      </div>
+
+      <div class="search" title="Search (UI saja)">
+        🔎 <input placeholder="Cari pasaran / keyword..." id="q" />
+      </div>
+
+      <button class="iconbtn" title="Menu">⠿</button>
     </div>
+  </header>
 
-    <section id="list" class="list"></section>
+  <main class="wrap">
+    <section class="hero">
+      <div class="kicker">PREDIKSI TOGEL</div>
+      <h1>PREDIKSI TOGEL WD BANDAR</h1>
+      <p class="sub">Prediksi akurat untuk berbagai pasaran togel terpopuler. Pilih pasaran, lalu klik “Lihat Prediksi” untuk menampilkan data.</p>
+
+      <div class="panel">
+        <div class="controls">
+          <div>
+            <label for="market">Pilih Pasaran Togel</label>
+            <div class="select">
+              <select id="market">
+                <option value="" selected disabled>— Pilih Pasaran —</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn" id="btn">
+            <span class="pill">🔮</span> LIHAT PREDIKSI
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="result" id="result">
+      <div class="result-head">
+        <div class="badge" id="badge">🎯</div>
+        <div class="result-title" id="title">—</div>
+      </div>
+
+      <div class="datebar">
+        <div class="chip">📅 <b id="dateText">—</b></div>
+      </div>
+
+      <div class="grid" id="grid"></div>
+
+      <div class="footer-note">
+        *Template UI. Isi data bisa kamu ubah dari JSON atau ambil dari API kamu sendiri (fetch). Gunakan dengan bijak.
+      </div>
+    </section>
   </main>
 
   <script src="/index.js"></script>
