@@ -1,31 +1,56 @@
-// index.js — WDBOS API Proxy (ALL leagues; priority; LIVE tab terpisah)
+// index.js — ONE SERVER (Bola + Live + API Proxy + PrediksiToto + Cron)
 import express from "express";
 import cors from "cors";
 import axios from "axios";
+import cron from "node-cron";
 import path from "path";
 
+import {
+  upsertMarket, listMarkets, getMarket,
+  upsertPrediction, getPrediction, clearPrediction,
+  logJobOnce, getDayKeyInTZ, getHHMMInTZ
+} from "./public/prediksitoto/db.js";
+
 const app = express();
-app.use(cors());
 
-// ---- Serve frontend (prediksi) ----
-const __DIR = process.cwd();
-app.use(express.static(path.join(__DIR, "public")));
-app.get("/", (_req, res) => res.sendFile(path.join(__DIR, "public/index.html")));
+/* ===================== MIDDLEWARE ===================== */
+app.use(cors({
+  origin: "*",
+  methods: ["GET","POST","OPTIONS"],
+  allowedHeaders: ["Content-Type", "x-admin-key"]
+}));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true }));
 
-// ---- Live page (TAB terpisah) ----
-app.get("/live", (_req, res) => res.sendFile(path.join(__DIR, "public/live.html")));
+/* ===================== STATIC FRONTEND ===================== */
+const ROOT = process.cwd();
+const PUBLIC_DIR = path.join(ROOT, "public");
 
-// ---- Config ----
+// Serve semua file di /public
+app.use(express.static(PUBLIC_DIR));
+
+// Homepage bola
+app.get("/", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "index.html")));
+
+// Live bola
+app.get("/live", (_req, res) => res.sendFile(path.join(PUBLIC_DIR, "live.html")));
+
+// optional: akses /prediksitoto tanpa slash
+app.get("/prediksitoto", (_req, res) => res.redirect("/prediksitoto/"));
+
+// whoami test
+app.get("/__whoami", (_req, res) => res.send("ONE SERVER RUNNING (BOLA + PREDIKSITOTO)"));
+
+/* ===================== CONFIG BOLA ===================== */
 const API = "https://v3.football.api-sports.io";
-const KEY = process.env.API_FOOTBALL_KEY;               // <== set di Railway
-const PORT = process.env.PORT || 8080;
+const KEY = (process.env.API_FOOTBALL_KEY || "").trim(); // set di Railway
+const PORT = Number(process.env.PORT || 8080);
 const SEASON = process.env.SEASON || "2025";
-const CACHE_TTL = Number(process.env.CACHE_TTL || 300); // detik (default 5 menit)
+const CACHE_TTL = Number(process.env.CACHE_TTL || 300); // detik
 
-// === MODE WHITELIST (opsional) ===
 const WHITELIST_MODE = (process.env.WHITELIST_MODE || "off").toLowerCase() === "on";
 
-// =================== WHITELIST LABELS (dipakai hanya jika WHITELIST_MODE=on) ===================
+/* =================== WHITELIST LABELS (dipakai hanya jika WHITELIST_MODE=on) =================== */
 const WL_LABELS_RAW = `
 ENGLISH PREMIER LEAGUE
 SPAIN LA LIGA
@@ -120,7 +145,7 @@ COPA LIBERTADORES
 COPA SUDAMERICANA
 `.trim().split("\n").map(s => s.trim()).filter(Boolean);
 
-// =================== UTIL & CACHE ===================
+/* =================== UTIL & CACHE =================== */
 const cache = new Map();
 const getC = (k) => {
   const d = cache.get(k);
@@ -137,6 +162,11 @@ const norm = (s="") => s
   .trim()
   .toUpperCase();
 
+function requireFootballKey(req, res, next) {
+  if (!KEY) return res.status(500).json({ error: true, message: "Missing API_FOOTBALL_KEY in Railway Variables" });
+  next();
+}
+
 async function apiGet(pathUrl, params) {
   const { data } = await axios.get(`${API}${pathUrl}`, {
     headers: { "x-apisports-key": KEY },
@@ -145,7 +175,7 @@ async function apiGet(pathUrl, params) {
   return data?.response || [];
 }
 
-// =================== PRIORITY ORDER (LEAGUE TOP DI ATAS) ===================
+/* =================== PRIORITY ORDER =================== */
 const PRIORITY_IDS = (process.env.PRIORITY_IDS || "")
   .split(",").map(s=>s.trim()).filter(Boolean).map(Number);
 const PRIORITY_ID_RANK = new Map(PRIORITY_IDS.map((id,i)=>[id,i]));
@@ -187,7 +217,6 @@ const PRIORITY_LABELS = [
 ];
 const PRIO_LABEL_RANK = new Map(PRIORITY_LABELS.map((s,i)=>[norm(s), i]));
 
-// =================== STARTUP: MAP LABEL → LEAGUE IDs (untuk whitelist mode) ===================
 let ALLOWED_LEAGUE_IDS = new Set();
 let WHITELIST_DEBUG = [];
 
@@ -237,21 +266,26 @@ async function buildWhitelist() {
   try {
     const allLeagues = await apiGet("/leagues");
     const labelsNorm = WL_LABELS_RAW.map(norm);
+
     const expands = (label) => {
       const arr = [label];
       const syns = SYN.get(label);
       if (syns) arr.push(...syns.map(norm));
       return arr;
     };
+
     const wanted = new Set();
     for (const L of labelsNorm) expands(norm(L)).forEach(x => wanted.add(x));
+
     const matched = [];
     const ids = new Set();
+
     for (const item of allLeagues) {
       const name = norm(item.league?.name || "");
       const country = norm(item.country?.name || "");
       const combo = `${country} ${name}`.trim();
       const candidates = [name, combo];
+
       let ok = false;
       for (const c of candidates) {
         if (wanted.has(c)) { ok = true; break; }
@@ -260,20 +294,19 @@ async function buildWhitelist() {
         }
         if (ok) break;
       }
+
       if (ok) {
         const hasSeason = Array.isArray(item.seasons)
           ? item.seasons.some(s => `${s.year}` === `${SEASON}`)
           : true;
+
         if (hasSeason) {
           ids.add(item.league.id);
-          matched.push({
-            id: item.league.id,
-            name: item.league.name,
-            country: item.country?.name || "",
-          });
+          matched.push({ id: item.league.id, name: item.league.name, country: item.country?.name || "" });
         }
       }
     }
+
     ALLOWED_LEAGUE_IDS = ids;
     WHITELIST_DEBUG = matched.sort((a,b)=> (a.country+a.name).localeCompare(b.country+b.name));
     console.log(`[Whitelist] mode ON, leagues mapped: ${ALLOWED_LEAGUE_IDS.size}`);
@@ -282,29 +315,25 @@ async function buildWhitelist() {
     ALLOWED_LEAGUE_IDS = new Set();
   }
 }
-await buildWhitelist();
-setInterval(buildWhitelist, 24 * 60 * 60 * 1000);
 
-// =================== PRIORITY HELPER ===================
 function leagueWeight(g) {
-  if (PRIORITY_ID_SET.size && PRIORITY_ID_SET.has(g.id)) {
-    return PRIORITY_ID_RANK.get(g.id) ?? 0;
-  }
+  if (PRIORITY_ID_SET.size && PRIORITY_ID_SET.has(g.id)) return PRIORITY_ID_RANK.get(g.id) ?? 0;
+
   const nTitle = norm(g.rawTitle || g.title || "");
   const nCombo = norm(`${g.country || ""} ${g.rawTitle || g.title || ""}`);
+
   if (PRIO_LABEL_RANK.has(nTitle)) return PRIO_LABEL_RANK.get(nTitle);
   if (PRIO_LABEL_RANK.has(nCombo)) return PRIO_LABEL_RANK.get(nCombo);
+
   for (const [label, syns] of SYN.entries()) {
     const nLabel = norm(label);
     const bag = new Set([nLabel, ...(syns||[]).map(norm)]);
-    if (bag.has(nTitle) || bag.has(nCombo)) {
-      return PRIO_LABEL_RANK.get(nLabel) ?? 999;
-    }
+    if (bag.has(nTitle) || bag.has(nCombo)) return PRIO_LABEL_RANK.get(nLabel) ?? 999;
   }
   return 999;
 }
 
-// =================== DATA & PREDIKSI (tetap) ===================
+/* =================== BOLA HELPERS =================== */
 function toWIB(iso) {
   try {
     const d = new Date(iso);
@@ -345,14 +374,19 @@ function predictFromRanks(homeId, awayId, rankMap) {
   const ra = hasRank ? (rankMap[awayId] || 20) : 22;
   const diff = ra - rh;
   const k = 6;
+
   let pHome = 1 / (1 + Math.exp(-diff / k)) + 0.05;
   pHome = Math.min(Math.max(pHome, 0.05), 0.9);
+
   const pDraw = 0.18 * Math.exp(-Math.abs(diff) / 6);
   let pAway = 1 - pHome - pDraw;
+
   if (pAway < 0.05) { pAway = 0.05; pHome = 1 - pDraw - pAway; }
+
   let tip = "Draw", conf = Math.round(pDraw * 100);
   if (pHome >= pAway && pHome >= pDraw) { tip = "Home"; conf = Math.round(pHome * 100); }
   if (pAway >= pHome && pAway >= pDraw) { tip = "Away"; conf = Math.round(pAway * 100); }
+
   return { tip, conf };
 }
 
@@ -360,33 +394,36 @@ function estimateScoreFromTip(matchLabel, tip, confidence) {
   const [home] = (matchLabel || "").split(" vs ");
   const c = Math.max(0, Math.min(100, Number(confidence ?? 50)));
   const flip = s => { const [a,b]=s.split("-").map(v=>v.trim()); return `${b} - ${a}`; };
+
   if (tip === "Draw") {
     if (c >= 75) return "1 - 1";
     if (c >= 55) return "0 - 0";
     return "1 - 1";
   }
+
   let s = "1 - 0";
   if (c >= 85) s = "3 - 1";
   else if (c >= 75) s = "2 - 0";
   else if (c >= 65) s = "2 - 1";
+
   if (tip !== home) s = flip(s);
   return s;
 }
 
-/* ==== Big match scoring (internal) ==== */
+/* ==== Big match scoring ==== */
 const BIG_TEAMS = [
-  'Real Madrid','Barcelona','Atlético','Atletico',
-  'Manchester City','Manchester United','Liverpool','Arsenal','Chelsea','Tottenham',
-  'Bayern','Borussia Dortmund','Dortmund','PSG',
-  'Inter','AC Milan','Juventus','Napoli',
-  'Ajax','PSV','Benfica','Porto'
+  "Real Madrid","Barcelona","Atlético","Atletico",
+  "Manchester City","Manchester United","Liverpool","Arsenal","Chelsea","Tottenham",
+  "Bayern","Borussia Dortmund","Dortmund","PSG",
+  "Inter","AC Milan","Juventus","Napoli",
+  "Ajax","PSV","Benfica","Porto"
 ];
 const ID_TEAMS = [
-  'Persib','Persija','Persebaya','Arema','Bali United','PSM','Persik','Dewa United',
-  'Madura United','Borneo','Persita','Barito Putera'
+  "Persib","Persija","Persebaya","Arema","Bali United","PSM","Persik","Dewa United",
+  "Madura United","Borneo","Persita","Barito Putera"
 ];
-const HOT_KEYWORDS = ['derby','clasico','el clasico','superclasico'];
-function matchPriorityFromLabel(label='') {
+const HOT_KEYWORDS = ["derby","clasico","el clasico","superclasico"];
+function matchPriorityFromLabel(label="") {
   const m = label.toLowerCase();
   let sc = 0;
   BIG_TEAMS.forEach(t => { if (m.includes(t.toLowerCase())) sc += 10; });
@@ -395,8 +432,8 @@ function matchPriorityFromLabel(label='') {
   return sc;
 }
 
-// =================== API: Prediksi (original + tambah IDs utk H2H) ===================
-app.get("/api/fixtures", async (req, res) => {
+/* =================== API BOLA =================== */
+app.get("/api/fixtures", requireFootballKey, async (req, res) => {
   try {
     const date = req.query.date || new Date().toISOString().slice(0,10);
     const season = req.query.season || SEASON;
@@ -423,15 +460,17 @@ app.get("/api/fixtures", async (req, res) => {
     const groups = [];
     for (const [leagueId, info] of byLeague) {
       const rankMap = await getStandings(leagueId, season).catch(()=> ({}));
+
       let rows = (info.rows || []).map(m => {
         const h = m.teams.home, a = m.teams.away;
         const match = `${h.name} vs ${a.name}`;
         const pred = predictFromRanks(h.id, a.id, rankMap);
         const tipName = pred.tip === "Home" ? h.name : pred.tip === "Away" ? a.name : "Draw";
+
         return {
-          fixtureId: m.fixture.id,              // <-- TAMBAHAN
-          homeId: h.id,                         // <-- TAMBAHAN
-          awayId: a.id,                         // <-- TAMBAHAN
+          fixtureId: m.fixture.id,
+          homeId: h.id,
+          awayId: a.id,
           kickoff: toWIB(m.fixture.date),
           match,
           score: `${m.goals.home ?? "-"} - ${m.goals.away ?? "-"}`,
@@ -441,6 +480,7 @@ app.get("/api/fixtures", async (req, res) => {
           _prio: matchPriorityFromLabel(match)
         };
       });
+
       rows.sort((r1, r2) => (r2._prio || 0) - (r1._prio || 0));
       rows = rows.map(({ _prio, ...rest }) => rest);
 
@@ -469,6 +509,7 @@ app.get("/api/fixtures", async (req, res) => {
       flag: g.flag,
       rows: g.rows
     }));
+
     res.set("Cache-Control", `public, max-age=${CACHE_TTL}`);
     res.json({ date, groups: out, filtered: useFilter });
   } catch (e) {
@@ -476,10 +517,9 @@ app.get("/api/fixtures", async (req, res) => {
   }
 });
 
-// =================== API: LIVE ===================
+/* =================== LIVE =================== */
 const LIVE_CACHE_TTL_MS = Number(process.env.LIVE_CACHE_TTL_MS || 30000);
 let liveCache = { at: 0, data: null };
-let matchCache = new Map(); // fixtureId -> {at, data}
 
 function prioLeagueName(name = "") {
   const T = norm(name);
@@ -489,15 +529,15 @@ function prioLeagueName(name = "") {
   return 1000;
 }
 
-app.get("/api/live", async (_req, res) => {
+app.get("/api/live", requireFootballKey, async (_req, res) => {
   try {
     const now = Date.now();
-    if (liveCache.data && now - liveCache.at < LIVE_CACHE_TTL_MS) {
-      return res.json(liveCache.data);
-    }
+    if (liveCache.data && now - liveCache.at < LIVE_CACHE_TTL_MS) return res.json(liveCache.data);
+
     const { data } = await axios.get(`${API}/fixtures`, {
       headers: { "x-apisports-key": KEY }, params: { live: "all" }
     });
+
     const rows = (data?.response || []).map(it => {
       const leagueName = `${(it.league?.country || "").toUpperCase()} - ${it.league?.name || ""}`.trim();
       const home = it.teams?.home?.name || "Home";
@@ -507,6 +547,7 @@ app.get("/api/live", async (_req, res) => {
       const short = it.fixture?.status?.short || "";
       const elapsed = it.fixture?.status?.elapsed;
       const time = (typeof elapsed === "number" && elapsed >= 0) ? `${elapsed}'` : short || "LIVE";
+
       return {
         id: it.fixture?.id,
         league: leagueName,
@@ -538,68 +579,20 @@ app.get("/api/live", async (_req, res) => {
   }
 });
 
-// =================== API: FINISHED (FT) ===================
-const FINISHED_CACHE_TTL_MS = Number(process.env.FINISHED_CACHE_TTL_MS || 120000);
-let finishedCache = { at: 0, data: null };
-
-app.get("/api/finished", async (req, res) => {
-  try {
-    const now = Date.now();
-    if (finishedCache.data && now - finishedCache.at < FINISHED_CACHE_TTL_MS) {
-      return res.json(finishedCache.data);
-    }
-
-    const date = req.query.date || new Date().toISOString().slice(0,10);
-    const { data } = await axios.get(`${API}/fixtures`, {
-      headers: { "x-apisports-key": KEY },
-      params: { date }
-    });
-
-    const FIN_CODES = new Set(["FT","AET","PEN"]);
-    const rows = (data?.response || [])
-      .filter(it => FIN_CODES.has((it.fixture?.status?.short || "").toUpperCase()))
-      .map(it => {
-        const leagueName = `${(it.league?.country || "").toUpperCase()} - ${it.league?.name || ""}`.trim();
-        const home = it.teams?.home?.name || "Home";
-        const away = it.teams?.away?.name || "Away";
-        const gh = it.goals?.home ?? it.score?.fulltime?.home ?? 0;
-        const ga = it.goals?.away ?? it.score?.fulltime?.away ?? 0;
-        return {
-          id: it.fixture?.id,
-          league: leagueName,
-          leagueId: it.league?.id,
-          flag: it.league?.flag || null,
-          match: `${home} vs ${away}`,
-          score: `${gh} - ${ga}`,
-          status: it.fixture?.status?.short || "FT"
-        };
-      });
-
-    rows.sort((a,b) => (a.league||"").localeCompare(b.league||"") || (a.match||"").localeCompare(b.match||""));
-
-    const payload = { date, rows };
-    finishedCache = { at: Date.now(), data: payload };
-    res.json(payload);
-  } catch (e) {
-    res.status(e?.response?.status || 500).json({ error: true, message: e?.response?.data || e.message });
-  }
-});
-
-// =================== API: UPCOMING (jadwal terdekat) ===================
+/* =================== UPCOMING (jadwal) =================== */
 const UPCOMING_CACHE_TTL_MS = Number(process.env.UPCOMING_CACHE_TTL_MS || 60000);
 let upcomingCache = { at: 0, key: "", data: null };
 
 function minutesUntil(iso) {
   try {
     const kick = new Date(iso).getTime();
-    const now = Date.now();
-    return Math.round((kick - now) / 60000);
+    return Math.round((kick - Date.now()) / 60000);
   } catch { return null; }
 }
 
-app.get("/api/upcoming", async (req, res) => {
+app.get("/api/upcoming", requireFootballKey, async (req, res) => {
   try {
-    const hours = Math.max(1, Math.min(48, Number(req.query.hours || 12))); // default 12 jam
+    const hours = Math.max(1, Math.min(48, Number(req.query.hours || 12)));
     const key = `h${hours}`;
     const now = Date.now();
 
@@ -623,16 +616,13 @@ app.get("/api/upcoming", async (req, res) => {
       axios.get(`${API}/fixtures`, { headers: { "x-apisports-key": KEY }, params: { date: todayStr } }),
       axios.get(`${API}/fixtures`, { headers: { "x-apisports-key": KEY }, params: { date: tomorrowStr } }),
     ]);
+
     const all = [...(r1.data?.response||[]), ...(r2.data?.response||[])];
 
     const withinMs = hours * 3600 * 1000;
     const rows = all
       .filter(it => (it.fixture?.status?.short || "").toUpperCase() === "NS")
-      .map(it => {
-        const kickIso = it.fixture?.date;
-        const mins = minutesUntil(kickIso);
-        return { it, mins, kickIso };
-      })
+      .map(it => ({ it, mins: minutesUntil(it.fixture?.date), kickIso: it.fixture?.date }))
       .filter(x => x.mins !== null && x.mins >= 0 && x.mins*60000 <= withinMs)
       .sort((a,b) => a.mins - b.mins)
       .map(({ it, mins, kickIso }) => {
@@ -658,8 +648,8 @@ app.get("/api/upcoming", async (req, res) => {
   }
 });
 
-// =================== API: HEAD TO HEAD (baru) ===================
-app.get("/api/h2h", async (req, res) => {
+/* =================== H2H =================== */
+app.get("/api/h2h", requireFootballKey, async (req, res) => {
   try {
     const home = Number(req.query.home);
     const away = Number(req.query.away);
@@ -688,90 +678,124 @@ app.get("/api/h2h", async (req, res) => {
   }
 });
 
-app.get("/api/match/:id", async (req, res) => {
-  const fixtureId = Number(req.params.id);
-  if (!fixtureId) return res.status(400).json({ error: true, message: "invalid id" });
-  const now = Date.now();
-  const cached = matchCache.get(fixtureId);
-  if (cached && now - cached.at < 25000) return res.json(cached.data);
-
-  try {
-    const fix = await apiGet("/fixtures", { id: fixtureId });
-    const info = fix?.[0];
-    const leagueId = info?.league?.id;
-    const season = info?.league?.season || SEASON;
-    const homeId = info?.teams?.home?.id;
-    const awayId = info?.teams?.away?.id;
-
-    const [events, stats, hStat, aStat] = await Promise.all([
-      apiGet("/fixtures/events", { fixture: fixtureId }),
-      apiGet("/fixtures/statistics", { fixture: fixtureId }),
-      (homeId && leagueId) ? axios.get(`${API}/teams/statistics`, { headers:{ "x-apisports-key": KEY }, params:{ team: homeId, league: leagueId, season } }).then(r=>r.data?.response).catch(()=>null) : null,
-      (awayId && leagueId) ? axios.get(`${API}/teams/statistics`, { headers:{ "x-apisports-key": KEY }, params:{ team: awayId, league: leagueId, season } }).then(r=>r.data?.response).catch(()=>null) : null,
-    ]);
-
-    const statHome = (stats?.find(s => s.team?.id === homeId)?.statistics || []).map(x => ({ type:x.type, value:x.value }));
-    const statAway = (stats?.find(s => s.team?.id === awayId)?.statistics || []).map(x => ({ type:x.type, value:x.value }));
-
-    const pickMinute = o => {
-      const m = (o?.goals?.for?.minute) || {};
-      const c = (o?.goals?.against?.minute) || {};
-      const buckets = ["0-15","16-30","31-45","46-60","61-75","76-90","91-105","106-120"];
-      return buckets.map(k => ({
-        bucket: k,
-        for: m[k]?.percentage || "0%",
-        against: c[k]?.percentage || "0%"
-      }));
-    };
-    const homeDist = pickMinute(hStat);
-    const awayDist = pickMinute(aStat);
-
-    const ev = (events || []).map(e => ({
-      time: e.time?.elapsed ?? 0,
-      team: e.team?.name || "",
-      type: e.type || "",
-      detail: e.detail || "",
-      player: e.player?.name || ""
-    }));
-
-    const data = {
-      id: fixtureId,
-      leagueId, season, homeId, awayId,
-      scoreboard: {
-        home: info?.teams?.home?.name || "Home",
-        away: info?.teams?.away?.name || "Away",
-        score: `${info?.goals?.home ?? 0} - ${info?.goals?.away ?? 0}`,
-        time: (typeof info?.fixture?.status?.elapsed === "number") ? `${info.fixture.status.elapsed}'` : (info?.fixture?.status?.short || "")
-      },
-      events: ev,
-      stats: { home: statHome, away: statAway },
-      distribution: { home: homeDist, away: awayDist }
-    };
-
-    matchCache.set(fixtureId, { at: Date.now(), data });
-    res.json(data);
-  } catch (e) {
-    res.status(e?.response?.status || 500).json({ error: true, message: e?.response?.data || e.message });
-  }
-});
-
-// ==== Debug (opsional) ====
+/* =================== DEBUG =================== */
 app.get("/debug/mapping", (_req, res) => {
   res.json({ whitelistMode: WHITELIST_MODE, totalSelected: ALLOWED_LEAGUE_IDS.size, leagues: WHITELIST_DEBUG });
 });
-app.get("/debug/order", (_req, res) => {
-  res.json(WHITELIST_DEBUG.map(x => ({
-    id: x.id, name: x.name, country: x.country,
-    weight: leagueWeight({ id: x.id, rawTitle: x.name, country: x.country })
-  })).sort((a,b)=> a.weight - b.weight || a.name.localeCompare(b.name)));
-});
-app.get("/debug/status", async (_req, res) => {
-  try {
-    const r = await axios.get(`${API}/status`, { headers: { "x-apisports-key": KEY }});
-    res.json({ ok:true, status:r.status, data:r.data });
-  } catch (e) {
-    res.status(e?.response?.status || 500).json({ ok:false, err:e?.response?.data || e.message });
-  }
+
+/* =================== PREDIKSITOTO (API + ADMIN + CRON) =================== */
+const ADMIN_KEY = (process.env.ADMIN_KEY || "").trim();
+if (!ADMIN_KEY) console.warn("⚠️ Set ADMIN_KEY di Railway Variables!");
+
+function requireAdmin(req, res, next) {
+  const key = String(req.headers["x-admin-key"] || "");
+  if (!ADMIN_KEY || key !== ADMIN_KEY) return res.status(401).json({ error: "Unauthorized" });
+  next();
+}
+
+// health check prediksitoto
+app.get("/api/prediksitoto/ping", (_req, res) => {
+  res.json({ ok: true, app: "prediksitoto", ts: Date.now() });
 });
 
-app.listen(PORT, () => console.log("Server running on port " + PORT));
+// list markets
+app.get("/api/markets", (_req, res) => {
+  res.json({ markets: listMarkets() });
+});
+
+// today prediction
+app.get("/api/prediksitoto/today", (req, res) => {
+  const slug = String(req.query.market || "").trim();
+  const market = getMarket(slug);
+  if (!market) return res.status(404).json({ error: "Market not found" });
+
+  const dayKey = getDayKeyInTZ("Asia/Jakarta");
+  const data = getPrediction(slug, dayKey);
+
+  res.json({ market, day: dayKey, data });
+});
+
+// admin upsert market
+app.post("/api/admin/markets", requireAdmin, (req, res) => {
+  const m = req.body || {};
+  const must = ["slug", "name"];
+  for (const k of must) if (!m[k]) return res.status(400).json({ error: `Missing: ${k}` });
+
+  let times = m.publish_times || [];
+  if (typeof times === "string") times = times.split(",").map(s => s.trim()).filter(Boolean);
+  if (!Array.isArray(times)) times = [];
+
+  const reset_time = (m.reset_time || "00:00").trim();
+
+  upsertMarket({
+    slug: String(m.slug).trim(),
+    name: String(m.name).trim(),
+    timezone: "Asia/Jakarta",
+    reset_time,
+    publish_times: times,
+    logo_url: m.logo_url ? String(m.logo_url).trim() : null,
+    tagline: m.tagline ? String(m.tagline).trim() : null,
+    desc: m.desc ? String(m.desc).trim() : null
+  });
+
+  res.json({ ok: true });
+});
+
+// generator
+const SHIO = ["Tikus","Kerbau","Macan","Kelinci","Naga","Ular","Kuda","Kambing","Monyet","Ayam","Anjing","Babi"];
+const randInt = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const randDigits = (len)=>Array.from({length:len},()=>String(randInt(0,9))).join("");
+const uniqueList = (count, make)=>{
+  const set=new Set();
+  while(set.size<count) set.add(make());
+  return [...set];
+};
+function makePrediction(marketName, dayKey){
+  return {
+    title: `OMTOGEL PREDIKSI ${marketName} TOGEL HARI: ${dayKey}`,
+    angkaMain: randDigits(5),
+    top4d: uniqueList(5, ()=>randDigits(4)).join("*"),
+    top3d: uniqueList(5, ()=>randDigits(3)).join("*"),
+    top2d: uniqueList(10, ()=>randDigits(2)).join("*"),
+    colokBebas: uniqueList(2, ()=>String(randInt(0,9))).join(" / "),
+    colok2d: uniqueList(2, ()=>randDigits(2)).join(" / "),
+    shioJitu: SHIO[randInt(0, SHIO.length-1)]
+  };
+}
+
+// cron reset + generate 00:00 WIB
+cron.schedule("0 0 * * *", () => {
+  const dayKey = getDayKeyInTZ("Asia/Jakarta");
+  for (const m of listMarkets()) {
+    const jobKey = "daily_00_reset_generate";
+    if (logJobOnce(m.slug, dayKey, jobKey)) {
+      clearPrediction(m.slug, dayKey);
+      upsertPrediction(m.slug, dayKey, makePrediction(m.name, dayKey));
+      console.log(`✅ 00:00 WIB generate: ${m.slug} (${dayKey})`);
+    }
+  }
+}, { timezone: "Asia/Jakarta" });
+
+// cron publish_times (cek tiap menit)
+cron.schedule("* * * * *", () => {
+  const now = getHHMMInTZ("Asia/Jakarta");
+  const dayKey = getDayKeyInTZ("Asia/Jakarta");
+
+  for (const m of listMarkets()) {
+    for (const t of (m.publish_times || [])) {
+      if (now === t) {
+        const jobKey = `publish_generate_${t}`;
+        if (logJobOnce(m.slug, dayKey, jobKey)) {
+          upsertPrediction(m.slug, dayKey, makePrediction(m.name, dayKey));
+          console.log(`✅ publish generate: ${m.slug} @${t} WIB (${dayKey})`);
+        }
+      }
+    }
+  }
+}, { timezone: "Asia/Jakarta" });
+
+/* =================== STARTUP =================== */
+await buildWhitelist(); // whitelist build sekali di awal
+setInterval(buildWhitelist, 24 * 60 * 60 * 1000);
+
+app.listen(PORT, () => console.log("✅ ONE SERVER running on port " + PORT));
