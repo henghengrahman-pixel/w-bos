@@ -1,164 +1,531 @@
-/* ============================= */
-/* GOLD BLACK THEME */
-/* ============================= */
-
 :root{
-  --bg-url: var(--bg-url);
-  --gold1: #ffd86b;
-  --gold2: #f6b93b;
-  --gold3: #c79200;
-  --dark1: #0b0b0b;
-  --dark2: #111111;
-  --dark3: #1a1a1a;
-  --text-light: #ffffff;
+  /* Black - Yellow theme */
+  --bg:#070708;
+  --bg2:#0d0d10;
+  --card:#101015;
+  --line:#22232e;
+
+  --text:#f6f6f7;
+  --muted:#b7bac6;
+
+  --gold:#ffd86b;
+  --gold2:#e1b64c;
+
+  /* Heights for sticky/fixed layout */
+  --topbar-h:64px;
+  --ticker-h:38px;
+  --gap:10px;
 }
 
-/* Background full gold-dark */
+/* ===== Reset & mobile stabil ===== */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
 body{
-  background:
-    linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.85)),
-    var(--bg-url);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--text);
+
+  /* Background tetap di tempat */
+  background-image: url("https://cdn.ope8k8.com/bandartotowebp/projectbarubandartoto/bgwebbandartotoketiga.webp");
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
-  color: var(--text-light);
-}
+  background-repeat: no-repeat;
+  background-attachment: fixed;   /* INI yang bikin tidak ikut scroll */
 
-/* Topbar */
-.top{
-  background: linear-gradient(90deg,#000,#1a1a1a);
-  border-bottom: 2px solid var(--gold2);
-}
+  min-height:100vh;
+  touch-action:manipulation;
+  overscroll-behavior:none;
+  -webkit-tap-highlight-color:transparent;
 
-.brand-name{
-  color: var(--gold1);
-  font-weight: 900;
+  padding-top: calc(var(--topbar-h) + var(--ticker-h) + var(--gap));
 }
+input,select,textarea,button{font-size:16px}
 
-/* Search box */
-.top-search{
-  background:#111;
-  border:1px solid var(--gold3);
+.container{width:94%;max-width:1100px;margin:0 auto}
+
+/* ===== Topbar (FIXED) ===== */
+.topbar{
+  position:fixed;
+  top:0; left:0; right:0;
+  height:var(--topbar-h);
+  z-index:9999;
+  background:rgba(0,0,0,.78);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,216,107,.14);
 }
-
-.sea{
-  color:#fff;
+.topbar .wrap{
+  height:var(--topbar-h);
+  display:flex;align-items:center;gap:12px;
+  justify-content:space-between;
+  padding:10px 6px;
 }
+.brand{display:flex;align-items:center;gap:10px;background:transparent;border:0;padding:0;cursor:pointer}
+.logo{height:46px;border-radius:10px}
 
-/* Drawer */
-.drawer-card{
-  background:#111;
-  border-left:2px solid var(--gold2);
-}
-
-.drawer-nav a{
-  color:var(--gold1);
-  border-bottom:1px solid #222;
-}
-
-.drawer-nav a:hover{
-  background:linear-gradient(90deg,#1a1a1a,#000);
-}
-
-/* Hero */
-.hero-title{
-  color:var(--gold1);
-  text-shadow:0 0 15px rgba(255,216,107,.4);
-}
-
-.meta-pill{
-  background:linear-gradient(90deg,var(--gold1),var(--gold2));
-  color:#000;
+/* Search */
+.searchbox{position:relative;flex:1;max-width:520px}
+.searchbox input{
+  width:100%;
+  padding:12px 42px 12px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,216,107,.20);
+  background:rgba(10,10,12,.92);
+  color:var(--text);
   font-weight:700;
+  outline:none;
+}
+.searchbox input:focus{
+  border-color:rgba(255,216,107,.55);
+  box-shadow:0 0 0 3px rgba(255,216,107,.12);
+}
+.searchbox svg{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;fill:var(--gold);opacity:.95
 }
 
-/* Cards */
-.card{
-  background:rgba(0,0,0,.75);
-  border:1px solid var(--gold3);
-  box-shadow:0 0 25px rgba(255,216,107,.15);
+/* ===== Running Text / Ticker (FIXED under topbar) ===== */
+.ticker{
+  position:fixed;
+  top:var(--topbar-h);
+  left:0; right:0;
+  height:var(--ticker-h);
+  z-index:9998;
+
+  display:flex;
+  align-items:center;
+
+  background:linear-gradient(180deg, rgba(0,0,0,.62), rgba(0,0,0,.78));
+  border-bottom:1px solid rgba(255,216,107,.16);
+  overflow:hidden;
+}
+.ticker__track{
+  display:flex;
+  gap:60px;
+  white-space:nowrap;
+  padding:0 14px;
+  animation:scrollX 26s linear infinite;
+}
+.ticker:hover .ticker__track{animation-play-state:paused}
+.ticker span{
+  color:#fff3c5;
+  letter-spacing:.25px;
+  font-weight:800;
+  opacity:.95;
+}
+@keyframes scrollX{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ===== Sticky slider wrapper ===== */
+.sticky-hero{
+  position:sticky;
+  top: calc(var(--topbar-h) + var(--ticker-h) + var(--gap));
+  z-index:50;
 }
 
-/* Card header */
-.card-title{
-  color:var(--gold1);
+/* ===== Hero ===== */
+.hero{padding:14px 0 8px;text-align:center}
+.hero h1{margin:0 0 4px;font-size:32px;letter-spacing:.3px}
+.hero .date{margin:0;color:#ffe6a5;font-weight:700}
+
+/* ===== Slider (no crop) ===== */
+.slider{
+  position:relative;
+  margin:12px auto 10px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(255,216,107,.18);
+  background:rgba(0,0,0,.55);
+  box-shadow:
+    0 20px 70px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+.slide-track{display:flex;transition:transform .6s ease}
+.slide{
+  min-width:100%;
+  aspect-ratio: 3 / 1;
+  display:grid;place-items:center;
+  background:linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.65));
+}
+@media (max-width:680px){ .slide{ aspect-ratio: 16 / 9; } }
+.slide img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center;
+  background:transparent;
 }
 
-/* Banner */
-.banner{
-  background:linear-gradient(90deg,var(--gold1),var(--gold2));
-  color:#000;
-  font-weight:700;
+/* Controls */
+.ctrl{
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,216,107,.22);
+  color:var(--gold);
+  padding:8px 12px;
+  border-radius:12px;
+  cursor:pointer;
+  user-select:none;
 }
-
-/* Select */
-.select{
-  background:#111;
-  border:1px solid var(--gold3);
-  color:#fff;
+.ctrl:hover{background:rgba(0,0,0,.78)}
+.prev{left:10px}.next{right:10px}
+.dots{position:absolute;left:0;right:0;bottom:10px;display:flex;gap:7px;justify-content:center}
+.dot{
+  width:9px;height:9px;border-radius:999px;
+  background:rgba(255,255,255,.18);
+  border:1px solid rgba(255,216,107,.20);
 }
+.dot.active{background:linear-gradient(180deg,var(--gold),var(--gold2));}
 
-/* Button utama */
-.btn{
-  background:linear-gradient(180deg,var(--gold1),var(--gold2));
-  color:#000;
+/* ===== Auth buttons under slider ===== */
+.authbar{
+  display:flex;gap:14px;
+  justify-content:center;align-items:center;
+  margin:12px auto 6px;
+  position:relative;z-index:5;
+  flex-wrap:wrap;
+}
+.btn-cta{
+  position:relative;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:14px 26px;
+  border-radius:999px;
   font-weight:900;
-  border:1px solid var(--gold3);
+  letter-spacing:.3px;
+  text-decoration:none;
+  transition:transform .15s ease, filter .15s ease;
+  min-width:160px;
+  box-shadow:0 12px 26px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.btn-cta:active{transform:translateY(1px)}
+.btn-cta::before{
+  content:"";
+  position:absolute;
+  top:-120%; left:-30%;
+  width:45%; height:300%;
+  background:linear-gradient(115deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,.16) 45%,
+    rgba(255,255,255,.42) 50%,
+    rgba(255,255,255,.16) 55%,
+    rgba(255,255,255,0) 100%);
+  transform:translateX(-140%);
+  animation:btnSweep 2.8s linear infinite;
+  pointer-events:none;
+}
+@keyframes btnSweep{to{transform:translateX(260%)}}
+
+.btn-gold{
+  color:#121212;
+  background:linear-gradient(180deg,#ffe08e,#ffd86b 55%,#e1b64c);
+  border:1px solid rgba(255,216,107,.65);
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
+}
+.btn-gold:hover{filter:brightness(1.06)}
+
+.btn-rgb{
+  color:#fff6d6;
+  background:linear-gradient(180deg,#0b0b0e,#131318);
+  border:1px solid rgba(255,216,107,.22);
+}
+.btn-rgb:hover{filter:brightness(1.06)}
+
+@media (max-width:680px){
+  .authbar{gap:10px}
+  .btn-cta{width:calc(50% - 5px);padding:14px 0;min-width:0}
 }
 
-.btn:hover{
-  filter:brightness(1.1);
-}
-
-/* Panel */
+/* ===== Panel + table ===== */
 .panel{
-  background:rgba(0,0,0,.8);
-  border:1px solid var(--gold3);
+  background:rgba(0,0,0,.62);
+  border:1px solid rgba(255,216,107,.16);
+  border-radius:16px;
+  padding:12px;
+  margin:14px 0;
+  box-shadow:0 22px 70px rgba(0,0,0,.55);
 }
-
-/* Tile */
-.tile{
-  background:#111;
-  border:1px solid #222;
+.panel .head{
+  background:linear-gradient(180deg,#ffe08e,#ffd86b 55%,#e1b64c);
+  color:#1b1400;
+  border:1px solid rgba(255,216,107,.65);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+  font-weight:900;
+  letter-spacing:.45px;
+  text-shadow:0 1px 0 rgba(255,255,255,.35);
 }
-
-.t-label{
-  color:var(--gold1);
+.twrap{overflow:auto;border-radius:12px;margin-top:10px}
+.t{
+  width:100%;
+  border-collapse:collapse;
+  font-size:15px;
 }
-
-.t-val{
-  color:#fff;
+.t th,.t td{
+  border:1px solid rgba(255,216,107,.10);
+  padding:10px 8px;
 }
-
-.t-val.gold{
-  color:var(--gold1);
-}
-
-/* SHIO pill */
-.shio-pill{
-  background:linear-gradient(180deg,var(--gold1),var(--gold2));
-  color:#000;
-  border:none;
+.t thead th{
+  background:rgba(0,0,0,.55);
+  color:var(--gold);
   font-weight:900;
 }
+.t tbody tr{background:rgba(10,10,12,.60)}
+.t tbody tr:nth-child(odd){background:rgba(16,16,20,.62)}
+.t td.time{white-space:nowrap}
+.t td.score{text-align:center;font-weight:900;color:#ffe08e}
 
-/* Syair box */
-.syair{
-  background:#111;
-  border:1px solid var(--gold3);
+/* ===== Loader & footer ===== */
+.loader{
+  position:fixed;inset:0;
+  display:none;place-items:center;
+  background:rgba(0,0,0,.55);
+  backdrop-filter:blur(2px);
+  z-index:99999;
+}
+.loader.show{display:grid}
+.loader-card{
+  background:rgba(0,0,0,.75);
+  border:1px solid rgba(255,216,107,.18);
+  border-radius:18px;
+  padding:18px 22px;
+  text-align:center;
+  box-shadow:0 18px 55px rgba(0,0,0,.6);
+}
+.spin{
+  width:22px;height:22px;border-radius:999px;
+  border:3px solid rgba(255,255,255,.20);
+  border-top-color:var(--gold);
+  margin:10px auto 0;
+  animation:spin 1s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{color:#d6d6d8;text-align:center;margin:26px 0}
+
+/* ===== Mobile polish ===== */
+@media (max-width:680px){
+  :root{ --topbar-h:58px; --ticker-h:34px; }
+  .logo{height:42px}
+  .topbar .wrap{padding:10px}
+  .t{font-size:14px}
+  .t th,.t td{padding:10px 8px}
 }
 
-.syair-label{
-  color:var(--gold1);
+/* ===== Quick Menu (ikon rapi) ===== */
+.mc-fab{
+  position:fixed;left:14px;bottom:16px;z-index:9999;
+  padding:10px 18px;border:0;border-radius:16px;
+  background:linear-gradient(180deg,#ffe08e,#f7b500);
+  color:#3a1700;font-weight:900;
+  box-shadow:0 12px 28px rgba(0,0,0,.45);
+  cursor:pointer;
+}
+.mc-fab:active{transform:translateY(1px)}
+.mc-sheet{
+  position:fixed;left:14px;bottom:78px;width:320px;max-width:92vw;z-index:9998;
+  background:linear-gradient(180deg,#ffeb99,#ffd24d);
+  border:1px solid rgba(255,216,107,.65);
+  border-radius:18px;
+  box-shadow:0 18px 44px rgba(0,0,0,.55);
+  color:#111;
+  transform:translateY(10px) scale(.98);
+  opacity:0;pointer-events:none;transition:.22s;
+}
+.mc-sheet.show{transform:none;opacity:1;pointer-events:auto}
+.mc-head{padding:14px 16px 4px;font-weight:1000;font-size:18px;color:#7a2100}
+.mc-sub{padding:0 16px 8px;color:#5a4c2a;font-size:12px;font-weight:700}
+.mc-list{padding:8px 14px 16px}
+.mc-item{
+  display:flex;gap:12px;align-items:center;margin:10px 0;padding:12px;
+  background:rgba(0,0,0,.82);
+  border:1px solid rgba(255,216,107,.18);
+  border-radius:16px;color:#fff;
+  text-decoration:none;
+}
+.mc-icon{
+  width:44px;height:44px;border-radius:12px;background:rgba(255,216,107,.10);
+  display:grid;place-items:center;overflow:hidden;
+  border:1px solid rgba(255,216,107,.16);
+}
+.mc-icon img{display:block;width:100%;height:100%;object-fit:contain}
+.mc-ttl{font-weight:900;margin-bottom:4px}
+.mc-desc{font-size:12px;color:#d3d3d6}
+.mc-close{
+  display:block;width:calc(100% - 24px);
+  margin:10px auto 14px;padding:10px 14px;border-radius:999px;
+  border:1px solid rgba(255,216,107,.65);
+  background:#ffd24d;color:#5a1c00;font-weight:900;
 }
 
-/* Footer */
-.foot{
-  border-top:1px solid var(--gold3);
+/* =======================================================================
+   ✅ LIVE SCORE FINAL FIX (DESKTOP CENTER + MOBILE RAPI)
+   Copas mulai sini sampai selesai.
+   ======================================================================= */
+
+/* group league */
+.live-list{display:block}
+.lg{margin:12px 0}
+.lg-head{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;
+  font-weight:900;letter-spacing:.2px;
+  background:rgba(0,0,0,.62);
+  border:1px solid rgba(255,216,107,.16);
+  border-radius:12px;
+  color:#e9ebf5;
+}
+.lg-head .lname{opacity:.92;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-body{margin-top:8px;display:flex;flex-direction:column;gap:10px}
+
+/* match card */
+.mwrap{
+  background:rgba(0,0,0,.62);
+  border:1px solid rgba(255,216,107,.16);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 18px 50px rgba(0,0,0,.45);
 }
 
-.foot-top{
-  background:linear-gradient(180deg,var(--gold1),var(--gold2));
-  color:#000;
-  font-weight:700;
+/* ===== BASE ===== */
+.match-row{
+  display:grid;
+  grid-template-columns:70px minmax(0,1fr) auto;
+  gap:10px;
+  align-items:center;
+  padding:12px;
+  color:#e9ebf5;
+}
+
+/* minute */
+.m-left{display:flex;align-items:flex-start;justify-content:flex-start}
+.m-left .minute{font-weight:1000;color:#39a7ff;font-size:13px}
+.m-left .minute.dim{color:#e9ebf5;opacity:.9}
+
+/* teams + score */
+.m-mid{
+  min-width:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;
+  gap:14px;
+  justify-items:center;
+}
+
+/* team text */
+.teamline{min-width:0;display:flex;align-items:center;gap:8px;width:100%}
+.teamline.left{justify-content:flex-end;text-align:right}
+.teamline.right{justify-content:flex-start;text-align:left;flex-direction:row-reverse}
+.teamline span{
+  display:block;
+  min-width:0;
+  font-weight:1000;
+  font-size:13.5px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:520px;
+}
+
+/* score */
+.score-pill{
+  background:rgba(11,16,36,.95);
+  color:#fff;
+  font-weight:1000;
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,.10);
+  min-width:84px;
+  text-align:center;
+  white-space:nowrap;
+  justify-self:center;
+}
+
+/* actions */
+.m-actions{display:flex;justify-content:flex-end;gap:8px;align-items:center}
+.btn-mini{
+  border:1px solid rgba(255,216,107,.20);
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:1000;
+  cursor:pointer;
+  font-size:12px;
+  white-space:nowrap;
+}
+.btn-mini:hover{filter:brightness(1.05)}
+.chev{
+  width:34px;height:34px;border-radius:12px;
+  border:1px solid rgba(255,216,107,.16);
+  background:rgba(0,0,0,.55);
+  color:#e9ebf5;
+  display:grid;place-items:center;
+  cursor:pointer;user-select:none;
+}
+.chev span{display:inline-block;transform:rotate(0deg);transition:.18s}
+.chev.open span{transform:rotate(180deg)}
+
+/* expand */
+.expand{
+  display:none;
+  border-top:1px solid rgba(255,216,107,.10);
+  background:rgba(0,0,0,.45);
+  padding:10px 12px;
+}
+.expand.show{display:block}
+
+/* =======================================================================
+/* ✅ DESKTOP FIX: HOME + SCORE + AWAY ketemu di tengah */
+@media (min-width:521px){
+  /* 3 kolom seimbang: kiri (waktu), tengah (match), kanan (actions) */
+  .match-row{
+    display:grid;
+    grid-template-columns:160px 1fr 160px; /* kiri = kanan biar tengah bener2 center */
+    align-items:center;
+    gap:10px;
+    padding:12px;
+  }
+
+  /* waktu tetap di kiri */
+  .m-left{justify-content:flex-start}
+
+  /* actions tetap di kanan, tapi gak narik tengah */
+  .m-actions{
+    justify-self:end;
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+
+  /* inti: m-mid jadi "sepaket" dan dipusatkan */
+  .m-mid{
+    justify-self:center;
+    width:fit-content;              /* penting: supaya benar2 jadi satu grup di tengah */
+    display:grid;
+    grid-template-columns:auto auto auto;  /* home | score | away */
+    align-items:center;
+    gap:14px;
+  }
+
+  /* tim kiri & kanan dekat score */
+  .teamline{width:auto;min-width:0}
+  .teamline.left{justify-content:flex-end;text-align:right}
+  .teamline.right{justify-content:flex-start;text-align:left;flex-direction:row}
+
+  /* batasi panjang nama biar gak dorong layout */
+  .teamline span{
+    max-width:320px;        /* kamu bisa naikin 400 kalau mau */
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* score tetap center */
+  .score-pill{justify-self:center}
+}
+
+/* layar besar: kasih ruang nama lebih panjang */
+@media (min-width:900px){
+  .match-row{grid-template-columns:180px 1fr 180px;}
+  .teamline span{max-width:420px;}
 }
